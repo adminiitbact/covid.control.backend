@@ -1,64 +1,58 @@
 package org.iitbact.cc.controllers;
 
+import io.swagger.annotations.ApiOperation;
 import org.iitbact.cc.beans.ResponseBean;
-import org.iitbact.cc.beans.ResponseBuilder;
 import org.iitbact.cc.entities.Facility;
-import org.iitbact.cc.exceptions.CovidControlErpError;
-import org.iitbact.cc.exceptions.CovidControlException;
+import org.iitbact.cc.helper.ControllerWrapper;
 import org.iitbact.cc.requests.BaseRequest;
+import org.iitbact.cc.requests.FacilityRequest;
 import org.iitbact.cc.response.BooleanResponse;
 import org.iitbact.cc.response.FacilityProfile;
 import org.iitbact.cc.services.FacilityServices;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api")
 public class FacilityController {
 
-	@Autowired
-	private FacilityServices facilityServices;
-	
-	
-	
-	
-	@PostMapping(path = "/facility/{facilityId}")
-	@ApiOperation(response = Facility.class, value = "API request to fetch a facility data")
-	public ResponseBean getFacilityData(@PathVariable int facilityId, @RequestBody BaseRequest request)
-			throws JsonProcessingException {
-		CovidControlErpError error = null;
-		FacilityProfile data = new FacilityProfile();
-		try {
-			data.setFacilityProfile(facilityServices.fetchFacilityData(facilityId, request));
-		} catch (CovidControlException e) {
-			error = e.getError();
-		}
-		ResponseBuilder responseBuilder = new ResponseBuilder(data, error);
-		return responseBuilder.build();
-	}
+    private final ControllerWrapper controllerWrapper;
+    private final FacilityServices facilityServices;
 
-	//TODO change request to fetch inputs from front end
-	@PostMapping(path = "/add/facility/profile/{facilityId}")
-	@ApiOperation(response = BooleanResponse.class, value = "API request to add profile data for a facility")
-	public ResponseBean addFacilityProfileData(@PathVariable int facilityId, @RequestBody BaseRequest request)
-			throws JsonProcessingException {
-		CovidControlErpError error = null;
-		BooleanResponse data = null;
-		try {
-			data = facilityServices.addFacilityProfileData(facilityId, request);
-		} catch (CovidControlException e) {
-			error = e.getError();
-		}
-		ResponseBuilder responseBuilder = new ResponseBuilder(data, error);
-		return responseBuilder.build();
-	}
-	
+    public FacilityController(ControllerWrapper controllerWrapper, FacilityServices facilityServices) {
+        this.controllerWrapper = controllerWrapper;
+        this.facilityServices = facilityServices;
+    }
+
+    @PostMapping(path = "/facility/create")
+    @ApiOperation(response = Facility.class, value = "API request to create a new facility")
+    public ResponseBean<FacilityProfile> createFacility(@RequestBody FacilityRequest facilityRequest) {
+        return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
+                () -> facilityServices.createFacility(facilityRequest.getFacility()));
+    }
+
+    @PostMapping(path = "/facility/{facilityId}/edit")
+    @ApiOperation(response = Facility.class, value = "API request to edit a facility data")
+    public ResponseBean<FacilityProfile> editFacility(@PathVariable int facilityId, @RequestBody FacilityRequest facilityRequest) {
+        return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
+                () -> facilityServices.editFacility(facilityId, facilityRequest.getFacility()));
+    }
+
+    @PostMapping(path = "/facility/{facilityId}")
+    @ApiOperation(response = Facility.class, value = "API request to fetch a facility data")
+    public ResponseBean<FacilityProfile> getFacilityData(@PathVariable int facilityId, @RequestBody BaseRequest request) {
+        return controllerWrapper.wrap(FacilityProfile::new, request, () -> facilityServices.fetchFacilityData(facilityId));
+    }
+
+    //TODO change request to fetch inputs from front end
+    @PostMapping(path = "/add/facility/profile/{facilityId}")
+    @ApiOperation(response = BooleanResponse.class, value = "API request to add profile data for a facility")
+    public ResponseBean<BooleanResponse> addFacilityProfileData(@PathVariable int facilityId, @RequestBody BaseRequest request) {
+        return controllerWrapper.wrap(BooleanResponse::new, request, () -> facilityServices.addFacilityProfileData(facilityId));
+    }
+
 }

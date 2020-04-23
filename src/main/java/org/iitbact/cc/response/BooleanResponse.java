@@ -1,23 +1,15 @@
 package org.iitbact.cc.response;
 
+import lombok.Data;
 import org.iitbact.cc.beans.BaseBean;
 
-public class BooleanResponse implements BaseBean {
-	
-	private boolean success;
-	
-	public BooleanResponse(boolean success) {
-		this.success=success;
-	}
-	
-	public BooleanResponse() {
-	}
-	
-	public boolean isSuccess() {
-		return success;
-	}
+@Data
+public class BooleanResponse implements BaseBean<Boolean> {
 
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
+    private Boolean success;
+
+    @Override
+    public void setEntity(Boolean success) {
+        this.success = success;
+    }
 }

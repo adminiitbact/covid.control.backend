@@ -7,13 +7,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class SvcHealthController {
-	@GetMapping(path = "/alive")
-	public String isAlive() {
-		return "OK";
-	}
-	
-	@GetMapping(path = "/getenv")
-	public String GetEnv() {
-		return "Running in env: " + System.getProperty("ENV");
-	}
+    @GetMapping(path = "/alive")
+    public String isAlive() {
+        return "OK";
+    }
+
+    @GetMapping(path = "/getenv")
+    public String GetEnv() {
+        return "Running in env: " + System.getenv("ENV");
+    }
 }
