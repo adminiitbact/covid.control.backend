@@ -27,6 +27,9 @@ public class FacilityController {
 	@Autowired
 	private FacilityServices facilityServices;
 	
+	
+	
+	
 	@PostMapping(path = "/facility/{facilityId}")
 	@ApiOperation(response = Facility.class, value = "API request to fetch a facility data")
 	public ResponseBean getFacilityData(@PathVariable int facilityId, @RequestBody BaseRequest request)
