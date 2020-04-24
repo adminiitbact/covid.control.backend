@@ -1,20 +1,16 @@
 package org.iitbact.cc.response;
 
+import lombok.Data;
 import org.iitbact.cc.beans.BaseBean;
 import org.iitbact.cc.entities.AdminUser;
 
-public class AdminUserProfileResponse implements BaseBean {
+@Data
+public class AdminUserProfileResponse implements BaseBean<AdminUser> {
 
-	private AdminUser profile;
+    private AdminUser profile;
 
-
-	public AdminUser getProfile() {
-		return profile;
-	}
-
-
-	public void setProfile(AdminUser profile) {
-		this.profile = profile;
-	}
-	
+    @Override
+    public void setEntity(AdminUser profile) {
+        this.profile = profile;
+    }
 }

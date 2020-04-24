@@ -5,8 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<AdminUser, Integer> {
 
-	AdminUser findByEmailId(String emailId);
+    AdminUser findByEmailId(String emailId);
 
-	AdminUser findByUserId(String userId);
+    AdminUser findByUserId(String userId);
 
 }

@@ -1,6 +1,7 @@
 package org.iitbact.cc.entities;
 
-import java.io.Serializable;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,73 +10,31 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 
 /**
  * The persistent class for the admin_users database table.
- * 
  */
+@Data
+@NoArgsConstructor
 @Entity
-@Table(name="admin_users")
-@NamedQuery(name="AdminUser.findAll", query="SELECT a FROM AdminUser a")
+@Table(name = "admin_users")
+@NamedQuery(name = "AdminUser.findAll", query = "SELECT a FROM AdminUser a")
 public class AdminUser implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String designation;
+    private String designation;
 
-	@Column(name="email_id")
-	private String emailId;
+    @Column(name = "email_id")
+    private String emailId;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-	private String name;
+    private String name;
 
-	@Column(name="user_id")
-	private String userId;
-	
-	public AdminUser() {
-	}
-
-	public String getDesignation() {
-		return this.designation;
-	}
-
-	public void setDesignation(String designation) {
-		this.designation = designation;
-	}
-
-	public String getEmailId() {
-		return this.emailId;
-	}
-
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
-	}
-
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getUserId() {
-		return this.userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-
+    @Column(name = "user_id")
+    private String userId;
 }

@@ -1,44 +1,46 @@
 package org.iitbact.cc.services;
 
 import org.iitbact.cc.entities.Facility;
+import org.iitbact.cc.exceptions.CovidControlErpError;
+import org.iitbact.cc.exceptions.CovidControlErrorCode;
+import org.iitbact.cc.exceptions.CovidControlErrorMsg;
+import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.repository.FacilityRepository;
-import org.iitbact.cc.requests.BaseRequest;
-import org.iitbact.cc.response.BooleanResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Service
 public class FacilityServices {
 
-	@Autowired
-	private FacilityRepository facilityRepository;
+    private final FacilityRepository facilityRepository;
 
-	@Autowired
-	private ApiValidationService validationService;
+    public FacilityServices(FacilityRepository facilityRepository) {
+        this.facilityRepository = facilityRepository;
+    }
 
+    public Facility createFacility(Facility facility) {
+        facilityRepository.save(facility);
+        return facility;
+    }
 
-	private void authenticateUser(String authToken) {
-		validationService.verifyFirebaseIdToken(authToken);
-	}
+    public Facility editFacility(int facilityId, Facility facilityRequest) throws CovidControlException {
+        Facility facility = facilityRepository.findById(facilityId)
+                .orElseThrow(() -> new CovidControlException(new CovidControlErpError(CovidControlErrorCode.INVALID_INPUT, CovidControlErrorMsg.INVALID_INPUT)));
+        facility.copy(facilityRequest);
+        facilityRepository.save(facility);
+        return facility;
+    }
 
-	public BooleanResponse addFacilityProfileData(int facilityId, BaseRequest request)
-			throws JsonProcessingException {
-		Facility facility = facilityRepository.findById(facilityId).get();
+    public Boolean addFacilityProfileData(int facilityId) {
+        Facility facility = facilityRepository.findById(facilityId).get();
 
-		//TODO logic to add facility
-		
-		facilityRepository.save(facility);
-		BooleanResponse returnVal = new BooleanResponse(true);
-		return returnVal;
-	}
+        //TODO logic to add facility
 
+        facilityRepository.save(facility);
+        return true;
+    }
 
-	public Facility fetchFacilityData(int facilityId, BaseRequest request) {
-		this.authenticateUser(request.getAuthToken());
-		Facility facility = facilityRepository.findById(facilityId).get();
-		return facility;
-	}
+    public Facility fetchFacilityData(int facilityId) {
+        return facilityRepository.findById(facilityId).get();
+    }
 
 }

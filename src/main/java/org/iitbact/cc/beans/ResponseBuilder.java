@@ -1,35 +1,17 @@
 package org.iitbact.cc.beans;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.iitbact.cc.exceptions.CovidControlErpError;
 
-public class ResponseBuilder {
-	private CovidControlErpError error;
-	private BaseBean data;
-	
-	public ResponseBuilder() {}
-	
-	public ResponseBuilder(BaseBean data, CovidControlErpError error) {
-		this.data = data;
-		this.error = error;
-	}
-	
-	public ResponseBean build() {
-		return new ResponseBean(this);
-	}
+@Data
+@AllArgsConstructor
+public class ResponseBuilder<T extends BaseBean> {
+    private T data;
+    private CovidControlErpError error;
 
-	public CovidControlErpError getError() {
-		return error;
-	}
+    public ResponseBean<T> build() {
+        return new ResponseBean<>(this);
+    }
 
-	public BaseBean getData() {
-		return data;
-	}
-
-	public void setError(CovidControlErpError error) {
-		this.error = error;
-	}
-
-	public void setData(BaseBean data) {
-		this.data = data;
-	}
 }
