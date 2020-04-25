@@ -27,4 +27,4 @@ jobs:
         application_name: control-backend-dev-app
         environment_name: control-backend-dev-env
         version_label: ${{ github.sha }}
-        deployment_package: target/hospitalerp.war
+        deployment_package: target/cc.war
