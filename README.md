@@ -1,21 +1,22 @@
-# covid.control.backend
-Backend For covid control web portal
+# Backend for covid control web portal
 
-In order to run, create a spring boot run configuration from eclipse run configurations
+# Setting up
 
-setting up spring boot run config
-Project > covid.control Main  > org.iitbact.covid.control Profile > dev
+In order to run, create a Spring boot run configuration from Eclipse (Run menu > Run Configurations...).
 
-# setting up env in run config
+In the "Spring Boot" tab, set the following:  
+Project > covid.control  
+Main  > org.iitbact.cc.CovidControlApplication  
+Profile > dev
 
-GOOGLE_APPLICATION_CREDENTIALS=path to firebase.json file
+In the "Environment" tab, add/set the following new variables:  
+GOOGLE_APPLICATION_CREDENTIALS = path to firebase.json file  
+ENV = dev  
+DB_connection = URL  
+DB_password = \*\*\*  
+DB_user = \*\*\*
 
-ENV=DEV
-DB_connection : URL
-DB_password : ***
-DB_user : ***
+After setting the above configuration, run the project as Spring boot app.
 
-# fter setting all the configurations, run the project as spring boot app
-
-# swagger documentation
-http://localhost:8080/swagger-ui.html
+# Swagger documentation
+Open this link once your server is running - http://localhost:8080/swagger-ui.html
