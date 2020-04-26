@@ -5,7 +5,6 @@ import org.iitbact.cc.exceptions.CovidControlErrorCode;
 import org.iitbact.cc.exceptions.CovidControlErrorMsg;
 import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.repository.UserRepository;
-import org.iitbact.cc.requests.BaseRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +13,6 @@ public class UserServices {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private ApiValidationService validationService;
 
     private AdminUser userProfileWrtUserId(String userId) throws CovidControlException {
         try {
@@ -32,10 +28,7 @@ public class UserServices {
         }
     }
 
-    public AdminUser profile(BaseRequest request) throws CovidControlException {
-
-        String userId = validationService.verifyFirebaseIdToken(request.getAuthToken());
-
-        return userProfileWrtUserId(userId);
+    public AdminUser profile(String uid) throws CovidControlException {
+        return userProfileWrtUserId(uid);
     }
 }

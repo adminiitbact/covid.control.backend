@@ -28,9 +28,9 @@ public class ControllerWrapper {
         T response = baseBeanSupplier.get();
         try {
             // First verify the token
-            validationService.verifyFirebaseIdToken(baseRequest.getAuthToken());
+            String userId = validationService.verifyFirebaseIdToken(baseRequest.getAuthToken());
             // Then call the function
-            response.setEntity(serviceSupplier.get());
+            response.setEntity(serviceSupplier.get(userId));
         } catch (CovidControlException e) {
             error = e.getError();
         }
