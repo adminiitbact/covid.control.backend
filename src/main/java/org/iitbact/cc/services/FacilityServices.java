@@ -17,12 +17,12 @@ public class FacilityServices {
         this.facilityRepository = facilityRepository;
     }
 
-    public Facility createFacility(Facility facility) {
+    public Facility createFacility(String uid, Facility facility) {
         facilityRepository.save(facility);
         return facility;
     }
 
-    public Facility editFacility(int facilityId, Facility facilityRequest) throws CovidControlException {
+    public Facility editFacility(String uid, int facilityId, Facility facilityRequest) throws CovidControlException {
         Facility facility = facilityRepository.findById(facilityId)
                 .orElseThrow(() -> new CovidControlException(new CovidControlErpError(CovidControlErrorCode.INVALID_INPUT, CovidControlErrorMsg.INVALID_INPUT)));
         facility.copy(facilityRequest);
@@ -30,16 +30,15 @@ public class FacilityServices {
         return facility;
     }
 
-    public Boolean addFacilityProfileData(int facilityId) {
+    public Boolean addFacilityProfileData(String uid,int facilityId) {
         Facility facility = facilityRepository.findById(facilityId).get();
 
         //TODO logic to add facility
-
         facilityRepository.save(facility);
         return true;
     }
 
-    public Facility fetchFacilityData(int facilityId) {
+    public Facility fetchFacilityData(String uid,int facilityId) {
         return facilityRepository.findById(facilityId).get();
     }
 
