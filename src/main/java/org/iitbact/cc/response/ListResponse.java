@@ -9,11 +9,14 @@ import java.util.List;
 @Data
 public class ListResponse<T> implements BaseBean<List<T>> {
     private List<T> list = new ArrayList<>();
-    private int pageNo;
-    private boolean hasMore;
+    private Integer pageNo;
+    private Boolean hasMore;
 
+    /** TODO Not sure about defaults for the other values **/
     @Override
     public void setEntity(List<T> list) {
         this.list = list;
+        this.pageNo = 1;
+        this.hasMore = false;
     }
 }

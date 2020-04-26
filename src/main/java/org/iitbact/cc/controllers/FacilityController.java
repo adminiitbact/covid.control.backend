@@ -1,11 +1,14 @@
 package org.iitbact.cc.controllers;
 
 import org.iitbact.cc.beans.ResponseBean;
+import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.helper.ControllerWrapper;
 import org.iitbact.cc.requests.BaseRequest;
 import org.iitbact.cc.requests.FacilityRequest;
+import org.iitbact.cc.requests.LinkFacilitiesRequest;
 import org.iitbact.cc.response.BooleanResponse;
 import org.iitbact.cc.response.FacilityProfile;
+import org.iitbact.cc.response.ListResponse;
 import org.iitbact.cc.services.FacilityServices;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +34,7 @@ public class FacilityController {
 	@ApiOperation(response = FacilityProfile.class, value = "API request to create a new facility")
 	public ResponseBean<FacilityProfile> createFacility(@RequestBody FacilityRequest facilityRequest) {
 		return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
-				(uid) -> facilityServices.createFacility(uid, facilityRequest.getFacility()));
+				(uid) -> facilityServices.createFacility(facilityRequest.getFacility()));
 	}
 
 	@PostMapping(path = "/facility/{facilityId}/edit")
@@ -39,7 +42,7 @@ public class FacilityController {
 	public ResponseBean<FacilityProfile> editFacility(@PathVariable int facilityId,
 			@RequestBody FacilityRequest facilityRequest) {
 		return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
-				(uid) -> facilityServices.editFacility(uid, facilityId, facilityRequest.getFacility()));
+				(uid) -> facilityServices.editFacility(facilityId, facilityRequest.getFacility()));
 	}
 
 	@PostMapping(path = "/facility/{facilityId}")
@@ -47,7 +50,7 @@ public class FacilityController {
 	public ResponseBean<FacilityProfile> getFacilityData(@PathVariable int facilityId,
 			@RequestBody BaseRequest request) {
 		return controllerWrapper.wrap(FacilityProfile::new, request,
-				(uid) -> facilityServices.fetchFacilityData(uid, facilityId));
+				(uid) -> facilityServices.fetchFacilityData(facilityId));
 	}
 
 	// TODO change request to fetch inputs from front end
@@ -56,7 +59,18 @@ public class FacilityController {
 	public ResponseBean<BooleanResponse> addFacilityProfileData(@PathVariable int facilityId,
 			@RequestBody BaseRequest request) {
 		return controllerWrapper.wrap(BooleanResponse::new, request,
-				(uid) -> facilityServices.addFacilityProfileData(uid, facilityId));
+				(uid) -> facilityServices.addFacilityProfileData(facilityId));
 	}
 
+    @PostMapping(path = "/add/facility/{facilityId}/links/create")
+    @ApiOperation(response = BooleanResponse.class, value = "API request to add profile data for a facility")
+    public ResponseBean<BooleanResponse> linkFacilities(@PathVariable int facilityId, @RequestBody LinkFacilitiesRequest request){
+        return controllerWrapper.wrap(BooleanResponse::new, request, (uid) -> facilityServices.linkFacilities(facilityId, request));
+    }
+
+    @PostMapping(path = "/add/facility/{facilityId}/links/get")
+    @ApiOperation(response = BooleanResponse.class, value = "API request to add profile data for a facility")
+    public ResponseBean<ListResponse<Facility>> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
+        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getLinkedFacilities(facilityId));
+    }
 }
