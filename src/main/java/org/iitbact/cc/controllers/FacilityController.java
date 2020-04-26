@@ -6,8 +6,10 @@ import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.helper.ControllerWrapper;
 import org.iitbact.cc.requests.BaseRequest;
 import org.iitbact.cc.requests.FacilityRequest;
+import org.iitbact.cc.requests.LinkFacilitiesRequest;
 import org.iitbact.cc.response.BooleanResponse;
 import org.iitbact.cc.response.FacilityProfile;
+import org.iitbact.cc.response.ListResponse;
 import org.iitbact.cc.services.FacilityServices;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,4 +57,15 @@ public class FacilityController {
         return controllerWrapper.wrap(BooleanResponse::new, request, () -> facilityServices.addFacilityProfileData(facilityId));
     }
 
+    @PostMapping(path = "/add/facility/{facilityId}/links/create")
+    @ApiOperation(response = BooleanResponse.class, value = "API request to add profile data for a facility")
+    public ResponseBean<BooleanResponse> linkFacilities(@PathVariable int facilityId, @RequestBody LinkFacilitiesRequest request){
+        return controllerWrapper.wrap(BooleanResponse::new, request, () -> facilityServices.linkFacilities(facilityId, request));
+    }
+
+    @PostMapping(path = "/add/facility/{facilityId}/links/get")
+    @ApiOperation(response = BooleanResponse.class, value = "API request to add profile data for a facility")
+    public ResponseBean<ListResponse<Facility>> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
+        return controllerWrapper.wrap(ListResponse::new, request, () -> facilityServices.getLinkedFacilities(facilityId));
+    }
 }
