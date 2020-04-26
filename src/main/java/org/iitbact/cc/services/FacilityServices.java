@@ -85,33 +85,10 @@ public class FacilityServices {
                 .orElseThrow(facilityDoesNotExistException);
         for(LinkFacilitiesRequest.Link link :  linkFacilitiesRequest.getFacilityLinks()){
             if(link.getLinkingStatus() == LinkingStatus.LINK){
-                Boolean linkAlreadyExists = facilityLinkRepository.existsBySourceFacilityIdAndMappedFacilityId(facilityId, link.getFacilityId());
-                if(!linkAlreadyExists) {
-                    if(facilityRepository.existsById(link.getFacilityId())) {
-                        FacilityLink facilityLink = FacilityLink.builder()
-                                .sourceFacilityId(facilityId)
-                                .mappedFacilityId(link.getFacilityId())
-                                .build();
-                        facilityLinkRepository.save(facilityLink);
-                        log.info("Link created successfully for {} and {}", facilityId, link.getFacilityId());
-                    }
-                    else{
-                        log.error("No facility exists by id {}. Invalid link.", link.getFacilityId());
-                    }
-                }
-                else{
-                    log.error("Link already exists between {} and {}", facilityId, link.getFacilityId());
-                }
+                addBidirectionalLink(facilityId, link.getFacilityId());
             }
             else if(link.getLinkingStatus() == LinkingStatus.UNLINK){
-                Optional<FacilityLink> facilityLink = facilityLinkRepository.getBySourceFacilityIdAndMappedFacilityId(facilityId, link.getFacilityId());
-                if(facilityLink.isPresent()){
-                    facilityLinkRepository.delete(facilityLink.get());
-                    log.info("Link deleted successfully for {} and {}", facilityId, link.getFacilityId());
-                }
-                else{
-                    log.error("Link does not exist between {} and {}", facilityId, link.getFacilityId());
-                }
+                removeBidirectionalLink(facilityId, link.getFacilityId());
             }
         }
         return true;
@@ -126,5 +103,47 @@ public class FacilityServices {
                 .stream()
                 .map(FacilityLink::getMappedFacilty)
                 .collect(Collectors.toList());
+    }
+
+    private void addBidirectionalLink(Integer facilityId1, Integer facilityId2){
+        addSingleLink(facilityId1, facilityId2);
+        addSingleLink(facilityId2, facilityId1);
+    }
+
+    private void addSingleLink(Integer sourceFacilityId, Integer mappedFacilityId){
+        log.info("Adding link for {} - {}", sourceFacilityId, mappedFacilityId);
+        Boolean linkAlreadyExists = facilityLinkRepository.existsBySourceFacilityIdAndMappedFacilityId(sourceFacilityId, mappedFacilityId);
+        if(!linkAlreadyExists) {
+            if(facilityRepository.existsById(mappedFacilityId)) {
+                FacilityLink facilityLink = FacilityLink.builder()
+                        .sourceFacilityId(sourceFacilityId)
+                        .mappedFacilityId(mappedFacilityId)
+                        .build();
+                facilityLinkRepository.save(facilityLink);
+                log.info("Link created successfully for {} and {}", sourceFacilityId, mappedFacilityId);
+            }
+            else{
+                log.error("No facility exists by id {}. Invalid link.", mappedFacilityId);
+            }
+        }
+        else{
+            log.error("Link already exists between {} and {}", sourceFacilityId, mappedFacilityId);
+        }
+    }
+
+    private void removeBidirectionalLink(Integer facilityId1, Integer facilityId2){
+        removeSingleLink(facilityId1, facilityId2);
+        removeSingleLink(facilityId2, facilityId1);
+    }
+
+    private void removeSingleLink(Integer sourceFacilityId, Integer mappedFacilityId){
+        Optional<FacilityLink> facilityLink = facilityLinkRepository.getBySourceFacilityIdAndMappedFacilityId(sourceFacilityId, mappedFacilityId);
+        if(facilityLink.isPresent()){
+            facilityLinkRepository.delete(facilityLink.get());
+            log.info("Link deleted successfully for {} and {}", sourceFacilityId, mappedFacilityId);
+        }
+        else{
+            log.error("Link does not exist between {} and {}", sourceFacilityId, mappedFacilityId);
+        }
     }
 }
