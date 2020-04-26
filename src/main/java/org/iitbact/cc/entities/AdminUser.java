@@ -25,6 +25,10 @@ public class AdminUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String designation;
+    
+    private String jurisdiction;
+    
+    private int region;
 
     @Column(name = "email_id")
     private String emailId;

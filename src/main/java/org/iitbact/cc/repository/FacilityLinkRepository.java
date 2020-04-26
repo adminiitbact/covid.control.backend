@@ -1,11 +1,10 @@
 package org.iitbact.cc.repository;
 
-import org.iitbact.cc.entities.Facility;
-import org.iitbact.cc.entities.FacilityLink;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
 import java.util.Optional;
+
+import org.iitbact.cc.entities.FacilityLink;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FacilityLinkRepository extends JpaRepository<FacilityLink, Integer> {
     /**
