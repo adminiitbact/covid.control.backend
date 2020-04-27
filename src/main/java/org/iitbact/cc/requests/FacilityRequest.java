@@ -1,11 +1,12 @@
 package org.iitbact.cc.requests;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-
 import org.iitbact.cc.beans.ContactDetails;
 import org.iitbact.cc.entities.Facility;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)

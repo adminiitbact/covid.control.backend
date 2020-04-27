@@ -25,16 +25,16 @@ public class ControllerWrapper {
          B baseRequest,
          CovidServiceSupplier<Entity> serviceSupplier) {
         CovidControlErpError error = null;
-        T response = baseBeanSupplier.get();
+        T data = baseBeanSupplier.get();
         try {
             // First verify the token
             String userId = validationService.verifyFirebaseIdToken(baseRequest.getAuthToken());
             // Then call the function
-            response.setEntity(serviceSupplier.get(userId));
+            data.setEntity(serviceSupplier.get(userId));
         } catch (CovidControlException e) {
             error = e.getError();
         }
-        ResponseBuilder<T> responseBuilder = new ResponseBuilder<>(response, error);
+        ResponseBuilder<T> responseBuilder = new ResponseBuilder<>(data, error);
         return responseBuilder.build();
     }
 }

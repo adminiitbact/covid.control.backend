@@ -58,7 +58,7 @@ public class Facility implements Serializable {
 	private byte governmentHospital;
 
 	@Column(name = "hospital_category")
-	private String hospitalCategory;
+	private String hospitalCategory="Unassigned";
 
 	@Column(name = "institution_type")
 	private String institutionType;
@@ -93,7 +93,7 @@ public class Facility implements Serializable {
 		this.email = that.email;
 		this.facilityStatus = that.facilityStatus;
 		this.governmentHospital = that.governmentHospital;
-		this.hospitalCategory = that.hospitalCategory;
+		//this.hospitalCategory = that.hospitalCategory;
 		this.institutionType = that.institutionType;
 		this.isFeverClinicAvailable = that.isFeverClinicAvailable;
 		this.isSeperateEntryExitAvailable = that.isSeperateEntryExitAvailable;

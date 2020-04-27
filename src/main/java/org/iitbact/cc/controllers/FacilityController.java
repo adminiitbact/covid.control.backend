@@ -43,7 +43,7 @@ public class FacilityController {
 	public ResponseBean<FacilityProfile> editFacility(@PathVariable int facilityId,
 			@RequestBody FacilityRequest facilityRequest) {
 		return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
-				(uid) -> facilityServices.editFacility(facilityId, facilityRequest.getFacility()));
+				(uid) -> facilityServices.editFacility(facilityId, facilityRequest));
 	}
 
 	@PostMapping(path = "/facilities/{facilityId}/get")

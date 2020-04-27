@@ -33,6 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,6 +63,8 @@ public class FacilityServices {
 		log.info("Create Facility Request");
 		log.debug("Create Facility Request - {}", facility.toString());
 
+		facilityRepository.save(facility);
+
 		FacilityContact contact = FacilityContact.builder().facility(facility).facilityId(facility.getFacilityId())
 				.data(request.getContactDetails().generateJson(jsonFactory)).build();
 		facility.setFacilityContact(contact);
@@ -71,12 +75,21 @@ public class FacilityServices {
 		return request.getFacility();
 	}
 
-	public Facility editFacility(int facilityId, Facility facilityRequest) throws CovidControlException {
+	public Facility editFacility(int facilityId, FacilityRequest facilityRequest) throws CovidControlException {
 		log.info("Edit Facility Request - facility Id {}", facilityId);
 		log.debug("Facility Edit Request Content {}", facilityRequest.toString());
 
 		Facility facility = facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
-		facility.copy(facilityRequest);
+		facility.copy(facilityRequest.getFacility());
+
+		ObjectMapper mapper = new ObjectMapper(jsonFactory);
+		ObjectNode node = mapper.valueToTree(facility.getFacilityContact().getData());
+		node.put(Constants.PRIMARY_CONTACT_EMAIL, facilityRequest.getContactDetails().getEmail());
+		node.put(Constants.PRIMARY_CONTACT_MOBILE, facilityRequest.getContactDetails().getMobile());
+		node.put(Constants.PRIMARY_CONTACT_NAME, facilityRequest.getContactDetails().getName());
+		
+		facility.getFacilityContact().setData(node);
+
 		facilityRepository.save(facility);
 		log.info("Facility {} updated successfully", facilityId);
 		return facility;
