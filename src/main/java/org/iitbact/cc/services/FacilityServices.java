@@ -178,7 +178,7 @@ public class FacilityServices {
 					}
 					if (searchCriteria.getCovidFacilityType() != null
 							&& !searchCriteria.getCovidFacilityType().isEmpty()) {
-						predicates.add(root.get("covidFacilityType").in(searchCriteria.getAreas()));
+						predicates.add(root.get("covidFacilityType").in(searchCriteria.getCovidFacilityType()));
 					}
 					if (searchCriteria.getJurisdictions() != null && !searchCriteria.getJurisdictions().isEmpty()) {
 						predicates.add(root.get("jurisdiction").in(searchCriteria.getJurisdictions()));
