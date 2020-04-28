@@ -49,7 +49,7 @@ public class FacilityContact implements Serializable {
 	
 	@Type(type = "json")
     @Column(columnDefinition = "json")
-	private ContactDetails data;
+	private Object data;
 
 	//bi-directional one-to-one association to Facility
 	@JsonIgnore
