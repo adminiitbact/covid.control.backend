@@ -9,5 +9,5 @@ import org.iitbact.cc.entities.Facility;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FacilityRequest extends BaseRequest {
-    private Facility facility;
+    private Facility facilityProfile;
 }
