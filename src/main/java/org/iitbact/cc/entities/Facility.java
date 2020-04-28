@@ -83,7 +83,7 @@ public class Facility implements Serializable {
 
 	// bi-directional one-to-one association to FacilityContact
 	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL,
-			fetch = FetchType.EAGER, optional = false)
+			fetch = FetchType.EAGER)
 	private FacilityContact facilityContact;
 
 	public void copy(Facility that) {
