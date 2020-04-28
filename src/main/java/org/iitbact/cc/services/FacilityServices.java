@@ -14,7 +14,6 @@ import javax.persistence.criteria.Root;
 import org.iitbact.cc.constants.Constants;
 import org.iitbact.cc.constants.LinkingStatus;
 import org.iitbact.cc.entities.Facility;
-import org.iitbact.cc.entities.FacilityContact;
 import org.iitbact.cc.entities.FacilityLink;
 import org.iitbact.cc.exceptions.CovidControlErpError;
 import org.iitbact.cc.exceptions.CovidControlErrorCode;
@@ -32,9 +31,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,12 +44,10 @@ public class FacilityServices {
 
 	private final FacilityRepository facilityRepository;
 	private final FacilityLinkRepository facilityLinkRepository;
-	private final JsonFactory jsonFactory;
 
 	public FacilityServices(FacilityRepository facilityRepository, FacilityLinkRepository facilityLinkRepository) {
 		this.facilityRepository = facilityRepository;
 		this.facilityLinkRepository = facilityLinkRepository;
-		this.jsonFactory = new JsonFactory();
 	}
 
 	@Transactional
@@ -63,12 +57,10 @@ public class FacilityServices {
 		log.info("Create Facility Request");
 		log.debug("Create Facility Request - {}", facility.toString());
 
-		facilityRepository.save(facility);
-
-		FacilityContact contact = FacilityContact.builder().facility(facility).facilityId(facility.getFacilityId())
-				.data(request.getContactDetails().generateJson(jsonFactory)).build();
-		facility.setFacilityContact(contact);
-
+		if(null != facility.getFacilityId()){
+			throw new CovidControlException(new CovidControlErpError(CovidControlErrorCode.FACILITY_ID_SHOULD_BE_NULL, CovidControlErrorMsg.FACILITY_ID_SHOULD_BE_NULL));
+		}
+		facility.getFacilityContact().setFacility(facility);
 		facilityRepository.save(facility);
 
 		log.info("Facilty created successfully with id {}", request.getFacility().getFacilityId());
@@ -82,14 +74,7 @@ public class FacilityServices {
 		Facility facility = facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
 		facility.copy(facilityRequest.getFacility());
 
-		ObjectMapper mapper = new ObjectMapper(jsonFactory);
-		ObjectNode node = mapper.valueToTree(facility.getFacilityContact().getData());
-		node.put(Constants.PRIMARY_CONTACT_EMAIL, facilityRequest.getContactDetails().getEmail());
-		node.put(Constants.PRIMARY_CONTACT_MOBILE, facilityRequest.getContactDetails().getMobile());
-		node.put(Constants.PRIMARY_CONTACT_NAME, facilityRequest.getContactDetails().getName());
-		
-		facility.getFacilityContact().setData(node);
-
+		facility.getFacilityContact().setFacility(facility);
 		facilityRepository.save(facility);
 		log.info("Facility {} updated successfully", facilityId);
 		return facility;

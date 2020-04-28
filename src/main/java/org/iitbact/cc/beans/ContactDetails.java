@@ -1,5 +1,6 @@
 package org.iitbact.cc.beans;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.iitbact.cc.constants.Constants;
 import org.iitbact.cc.exceptions.CovidControlException;
 
@@ -12,22 +13,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ContactDetails {
+public class ContactDetails implements Serializable {
+	@JsonProperty(value = Constants.PRIMARY_CONTACT_NAME)
 	private String name;
+
+	@JsonProperty(value = Constants.PRIMARY_CONTACT_MOBILE)
 	private String mobile;
+
+	@JsonProperty(value = Constants.PRIMARY_CONTACT_EMAIL)
 	private String email;
-
-	public Object generateJson(JsonFactory jsonFactory) throws CovidControlException {
-		ObjectMapper mapper=new ObjectMapper(jsonFactory);
-		ObjectNode node=mapper.createObjectNode();
-		node.put(Constants.PRIMARY_CONTACT_EMAIL, this.email);
-		node.put(Constants.PRIMARY_CONTACT_MOBILE, this.mobile);
-		node.put(Constants.PRIMARY_CONTACT_NAME, this.name);
-		return node;
-	}
-
 }

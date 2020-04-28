@@ -49,7 +49,7 @@ public class Facility implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "facility_id")
-	private int facilityId;
+	private Integer facilityId;
 
 	@Column(name = "facility_status")
 	private String facilityStatus;
@@ -82,7 +82,8 @@ public class Facility implements Serializable {
 	private String ulbZoneName;
 
 	// bi-directional one-to-one association to FacilityContact
-	@OneToOne(mappedBy = "facility", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL,
+			fetch = FetchType.EAGER, optional = false)
 	private FacilityContact facilityContact;
 
 	public void copy(Facility that) {
@@ -102,5 +103,7 @@ public class Facility implements Serializable {
 		this.telephone = that.telephone;
 		this.ulbWardName = that.ulbWardName;
 		this.ulbZoneName = that.ulbZoneName;
+		this.facilityContact = that.facilityContact;
+		this.facilityContact.setFacilityId(this.facilityId);
 	}
 }
