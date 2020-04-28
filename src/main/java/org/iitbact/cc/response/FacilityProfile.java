@@ -24,7 +24,7 @@ public class FacilityProfile implements BaseBean<Facility> {
         Object contact=facility.getFacilityContact().getData();
         ObjectMapper mapper=new ObjectMapper();
         JsonNode node=mapper.valueToTree(contact);
-        this.contactDetails= new ContactDetails(node.get(Constants.PRIMARY_CONTACT_NAME).asText()
-        		,node.get(Constants.PRIMARY_CONTACT_MOBILE).asText(),node.get(Constants.PRIMARY_CONTACT_EMAIL).asText());
+        this.contactDetails= new ContactDetails(node.get(Constants.PRIMARY_CONTACT_NAME).asText("")
+        		,node.get(Constants.PRIMARY_CONTACT_MOBILE).asText(""),node.get(Constants.PRIMARY_CONTACT_EMAIL).asText(""));
     }
 }
