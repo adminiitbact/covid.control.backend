@@ -52,7 +52,7 @@ public class FacilityServices {
 
 	@Transactional
 	public Facility createFacility(FacilityRequest request) throws CovidControlException {
-		Facility facility = request.getFacility();
+		Facility facility = request.getFacilityProfile();
 
 		log.info("Create Facility Request");
 		log.debug("Create Facility Request - {}", facility.toString());
@@ -63,8 +63,8 @@ public class FacilityServices {
 		facility.getFacilityContact().setFacility(facility);
 		facilityRepository.save(facility);
 
-		log.info("Facilty created successfully with id {}", request.getFacility().getFacilityId());
-		return request.getFacility();
+		log.info("Facilty created successfully with id {}", request.getFacilityProfile().getFacilityId());
+		return request.getFacilityProfile();
 	}
 
 	public Facility editFacility(int facilityId, FacilityRequest facilityRequest) throws CovidControlException {
@@ -72,7 +72,7 @@ public class FacilityServices {
 		log.debug("Facility Edit Request Content {}", facilityRequest.toString());
 
 		Facility facility = facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
-		facility.copy(facilityRequest.getFacility());
+		facility.copy(facilityRequest.getFacilityProfile());
 
 		facility.getFacilityContact().setFacility(facility);
 		facilityRepository.save(facility);
