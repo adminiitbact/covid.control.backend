@@ -60,7 +60,7 @@ public class FacilityController {
         return controllerWrapper.wrap(BooleanResponse::new, request, (uid) -> facilityServices.linkFacilities(facilityId, request));
     }
 
-    @PostMapping(path = "/facilitiesy/{facilityId}/links/get")
+    @PostMapping(path = "/facilities/{facilityId}/links/get")
     @ApiOperation(response = BooleanResponse.class,responseContainer = "List", value = "API to fetch links between facilities")
     public ResponseBean<ListResponse<Facility>> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
         return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getLinkedFacilities(facilityId));
