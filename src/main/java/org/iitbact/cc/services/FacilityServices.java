@@ -13,6 +13,7 @@ import javax.persistence.criteria.Root;
 
 import org.iitbact.cc.constants.Constants;
 import org.iitbact.cc.constants.LinkingStatus;
+import org.iitbact.cc.entities.AdminUser;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.entities.FacilityLink;
 import org.iitbact.cc.exceptions.CovidControlErpError;
@@ -31,7 +32,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -44,15 +44,19 @@ public class FacilityServices {
 
 	private final FacilityRepository facilityRepository;
 	private final FacilityLinkRepository facilityLinkRepository;
-
-	public FacilityServices(FacilityRepository facilityRepository, FacilityLinkRepository facilityLinkRepository) {
+	private final UserServices userServices;
+	public FacilityServices(FacilityRepository facilityRepository, FacilityLinkRepository facilityLinkRepository,UserServices userServices) {
 		this.facilityRepository = facilityRepository;
 		this.facilityLinkRepository = facilityLinkRepository;
+		this.userServices=userServices;
 	}
 
 	@Transactional
-	public Facility createFacility(FacilityRequest request) throws CovidControlException {
+	public Facility createFacility(FacilityRequest request,String uid) throws CovidControlException {
 		Facility facility = request.getFacilityProfile();
+		
+		AdminUser user=userServices.profile(uid);
+		facility.setRegion(user.getRegion());
 
 		log.info("Create Facility Request");
 		log.debug("Create Facility Request - {}", facility.toString());
@@ -67,12 +71,14 @@ public class FacilityServices {
 		return request.getFacilityProfile();
 	}
 
-	public Facility editFacility(int facilityId, FacilityRequest facilityRequest) throws CovidControlException {
+	public Facility editFacility(int facilityId, FacilityRequest facilityRequest,String uid) throws CovidControlException {
 		log.info("Edit Facility Request - facility Id {}", facilityId);
 		log.debug("Facility Edit Request Content {}", facilityRequest.toString());
+		AdminUser user=userServices.profile(uid);
+		
 
 		Facility facility = facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
-		facility.copy(facilityRequest.getFacilityProfile());
+		facility.copy(facilityRequest.getFacilityProfile(),user);
 
 		facility.getFacilityContact().setFacility(facility);
 		facilityRepository.save(facility);
@@ -155,24 +161,29 @@ public class FacilityServices {
 		}
 	}
 
-	public List<Facility> getFacilities(int pageNo, FacilitySearchCriteria searchCriteria) {
-
+	public List<Facility> getFacilities(int pageNo, String uid, FacilitySearchCriteria searchCriteria) throws CovidControlException {
+		AdminUser user=userServices.profile(uid);
 		Pageable pageRequest = PageRequest.of(pageNo - 1, Constants.PAGE_SIZE);
 
-		Page<Facility> page = facilityRepository.findAll(FacilitySearchSpecificaton.findByCriteria(searchCriteria),
+		Page<Facility> page = facilityRepository.findAll(FacilitySearchSpecificaton.findByCriteria(searchCriteria,user.getRegion()),
 				pageRequest);
 
 		return page.toList();
 	}
 
 	private static class FacilitySearchSpecificaton {
-		private static Specification<Facility> findByCriteria(final FacilitySearchCriteria searchCriteria) {
+		private static Specification<Facility> findByCriteria(final FacilitySearchCriteria searchCriteria,int region) {
 			return new Specification<Facility>() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public Predicate toPredicate(Root<Facility> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 					List<Predicate> predicates = new ArrayList<>();
+					
+					Predicate predicateForRegion = cb.equal(root.get("region"),region);
+					
+					predicates.add(predicateForRegion);
+					
 					if (searchCriteria.getAreas() != null && !searchCriteria.getAreas().isEmpty()) {
 						predicates.add(root.get("area").in(searchCriteria.getAreas()));
 					}
@@ -186,6 +197,8 @@ public class FacilityServices {
 					if (searchCriteria.getFacilityStatus() != null && !searchCriteria.getFacilityStatus().isEmpty()) {
 						predicates.add(root.get("facilityStatus").in(searchCriteria.getFacilityStatus()));
 					}
+					
+					
 					return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 				}
 			};
