@@ -80,13 +80,15 @@ public class Facility implements Serializable {
 
 	@Column(name = "ulb_zone_name")
 	private String ulbZoneName;
+	
+	private int region;
 
 	// bi-directional one-to-one association to FacilityContact
 	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL,
 			fetch = FetchType.EAGER)
 	private FacilityContact facilityContact;
 
-	public void copy(Facility that) {
+	public void copy(Facility that,AdminUser user) {
 		this.address = that.address;
 		this.agreementStatus = that.agreementStatus;
 		this.area = that.area;
@@ -105,5 +107,6 @@ public class Facility implements Serializable {
 		this.ulbZoneName = that.ulbZoneName;
 		this.facilityContact = that.facilityContact;
 		this.facilityContact.setFacilityId(this.facilityId);
+		this.region=user.getRegion();
 	}
 }

@@ -29,7 +29,7 @@ public class AreaController {
     @ApiOperation(response = Area.class, value = "API request to create a new area")
     public ResponseBean<ListResponse<Area>> listArea(@RequestBody BaseRequest areaRequest) {
         return controllerWrapper.wrap(ListResponse::new, areaRequest,
-                (uid) -> areaService.listAreas());
+                (uid) -> areaService.listAreas(uid));
     }
 
 
