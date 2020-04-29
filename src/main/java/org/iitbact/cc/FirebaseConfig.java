@@ -25,7 +25,7 @@ public class FirebaseConfig {
     @Value("${firebase.dburl}")
     private String dbUrl;
 
-    @Value("${env}")
+    @Value("${ENV}")
     private String env;
 
     @PostConstruct

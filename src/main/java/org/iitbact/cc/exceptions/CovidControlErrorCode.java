@@ -12,6 +12,8 @@ public class CovidControlErrorCode {
     public static final long HTTP_RESPONSE_ERROR = 9;
     public static final long INVALID_ACCESS_CODE = 10; //illegal access
     public static final long TOKEN_INVALID = 11;
+    public static final long FACILITY_DOES_NOT_EXIST = 12;
+    public static final long FACILITY_ID_SHOULD_BE_NULL = 13;
 
 }
 

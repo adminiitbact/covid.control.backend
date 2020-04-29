@@ -12,5 +12,6 @@ public class CovidControlErrorMsg {
     public static final String COOKIE_NULL = "Token cannot be null";
     public static final String INVALID_OTP = "Invalid Otp!";
     public static final String DATE_FORMAT_ERROR = "Date is not in correct format!";
-
+    public static final String FACILITY_DOES_NOT_EXIST = "Invalid Facility Id. Facility does not exist!";
+    public static final String FACILITY_ID_SHOULD_BE_NULL = "Facility Id should be null";
 }
