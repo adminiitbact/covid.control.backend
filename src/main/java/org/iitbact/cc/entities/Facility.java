@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -37,7 +39,7 @@ public class Facility implements Serializable {
 	private String address;
 
 	@Column(name = "agreement_status")
-	private String agreementStatus;
+	private String agreementStatus="Unassigned";
 
 	private String area;
 
@@ -52,7 +54,7 @@ public class Facility implements Serializable {
 	private Integer facilityId;
 
 	@Column(name = "facility_status")
-	private String facilityStatus;
+	private String facilityStatus="Unassigned";
 
 	@Column(name = "government_hospital")
 	private byte governmentHospital;
@@ -87,6 +89,20 @@ public class Facility implements Serializable {
 	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL,
 			fetch = FetchType.EAGER)
 	private FacilityContact facilityContact;
+
+	@PrePersist
+	@PreUpdate
+	public void prepersist(){
+	    if(agreementStatus == null){
+	        agreementStatus = "Unassigned";
+        }
+	    if(facilityStatus == null){
+	        facilityStatus = "Unassigned";
+        }
+	    if(hospitalCategory == null){
+	        hospitalCategory = "Unassigned";
+        }
+    }
 
 	public void copy(Facility that,AdminUser user) {
 		this.address = that.address;
