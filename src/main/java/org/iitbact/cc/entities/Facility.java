@@ -37,7 +37,7 @@ public class Facility implements Serializable {
 	private String address;
 
 	@Column(name = "agreement_status")
-	private String agreementStatus;
+	private String agreementStatus="Unassigned";
 
 	private String area;
 
@@ -52,7 +52,7 @@ public class Facility implements Serializable {
 	private Integer facilityId;
 
 	@Column(name = "facility_status")
-	private String facilityStatus;
+	private String facilityStatus="Unassigned";
 
 	@Column(name = "government_hospital")
 	private byte governmentHospital;
