@@ -1,23 +1,18 @@
 package org.iitbact.cc.response;
 
 import org.iitbact.cc.beans.BaseBean;
-import org.iitbact.cc.beans.ContactDetails;
-import org.iitbact.cc.beans.ContactDetails.ContactDetailsBuilder;
-import org.iitbact.cc.constants.Constants;
-import org.iitbact.cc.entities.Facility;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.iitbact.cc.dto.FacilityDto;
 
 import lombok.Data;
 
 @Data
-public class FacilityProfile implements BaseBean<Facility> {
+public class FacilityProfile implements BaseBean<FacilityDto> {
 	
-    private Facility facilityProfile;
+    private FacilityDto facilityProfile;
     
     @Override
-    public void setEntity(Facility facility) {
+    public void setEntity(FacilityDto facility) {
         this.facilityProfile = facility;
     }
 }

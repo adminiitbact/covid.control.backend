@@ -1,7 +1,11 @@
 package org.iitbact.cc.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -13,6 +17,8 @@ import javax.persistence.criteria.Root;
 
 import org.iitbact.cc.constants.Constants;
 import org.iitbact.cc.constants.LinkingStatus;
+import org.iitbact.cc.dto.AvailabilityStatus;
+import org.iitbact.cc.dto.FacilityDto;
 import org.iitbact.cc.entities.AdminUser;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.entities.FacilityLink;
@@ -22,6 +28,7 @@ import org.iitbact.cc.exceptions.CovidControlErrorMsg;
 import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.repository.FacilityLinkRepository;
 import org.iitbact.cc.repository.FacilityRepository;
+import org.iitbact.cc.repository.WardRepository;
 import org.iitbact.cc.requests.FacilityRequest;
 import org.iitbact.cc.requests.FacilitySearchCriteria;
 import org.iitbact.cc.requests.LinkFacilitiesRequest;
@@ -45,16 +52,19 @@ public class FacilityServices {
 	private final FacilityRepository facilityRepository;
 	private final FacilityLinkRepository facilityLinkRepository;
 	private final UserServices userServices;
-	public FacilityServices(FacilityRepository facilityRepository, FacilityLinkRepository facilityLinkRepository,UserServices userServices) {
+	private final WardRepository wardRepository;
+
+	public FacilityServices(FacilityRepository facilityRepository, FacilityLinkRepository facilityLinkRepository, UserServices userServices, WardRepository wardRepository) {
 		this.facilityRepository = facilityRepository;
 		this.facilityLinkRepository = facilityLinkRepository;
-		this.userServices=userServices;
+        this.userServices = userServices;
+        this.wardRepository = wardRepository;
 	}
 
 	@Transactional
-	public Facility createFacility(FacilityRequest request,String uid) throws CovidControlException {
+	public FacilityDto createFacility(FacilityRequest request,String uid) throws CovidControlException {
 		Facility facility = request.getFacilityProfile();
-		
+
 		AdminUser user=userServices.profile(uid);
 		facility.setRegion(user.getRegion());
 
@@ -67,15 +77,15 @@ public class FacilityServices {
 		facility.getFacilityContact().setFacility(facility);
 		facilityRepository.save(facility);
 
-		log.info("Facilty created successfully with id {}", request.getFacilityProfile().getFacilityId());
-		return request.getFacilityProfile();
+		log.info("Facility created successfully with id {}", request.getFacilityProfile().getFacilityId());
+		return toFacilityDto(request.getFacilityProfile());
 	}
 
-	public Facility editFacility(int facilityId, FacilityRequest facilityRequest,String uid) throws CovidControlException {
+	public FacilityDto editFacility(int facilityId, FacilityRequest facilityRequest,String uid) throws CovidControlException {
 		log.info("Edit Facility Request - facility Id {}", facilityId);
 		log.debug("Facility Edit Request Content {}", facilityRequest.toString());
 		AdminUser user=userServices.profile(uid);
-		
+
 
 		Facility facility = facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
 		facility.copy(facilityRequest.getFacilityProfile(),user);
@@ -83,13 +93,13 @@ public class FacilityServices {
 		facility.getFacilityContact().setFacility(facility);
 		facilityRepository.save(facility);
 		log.info("Facility {} updated successfully", facilityId);
-		return facility;
+		return fetchAvailabilityStatusConvertToDto(facility);
 	}
 
-	public Facility fetchFacilityData(int facilityId) throws CovidControlException {
+	public FacilityDto fetchFacilityData(int facilityId) throws CovidControlException {
 		log.info("Fetch Facility Data request {}", facilityId);
 
-		return facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
+		return fetchAvailabilityStatusConvertToDto(facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException));
 	}
 
 	public Boolean linkFacilities(int facilityId, LinkFacilitiesRequest linkFacilitiesRequest)
@@ -114,12 +124,15 @@ public class FacilityServices {
 		return true;
 	}
 
-	public List<Facility> getLinkedFacilities(int facilityId) throws CovidControlException {
+	public List<FacilityDto> getLinkedFacilities(int facilityId) throws CovidControlException {
 		log.info("Get Linked Facilities - facility id {}", facilityId);
 
 		Facility facility = facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
-		return facilityLinkRepository.getAllBySourceFacilityId(facilityId).stream().map(FacilityLink::getMappedFacilty)
-				.collect(Collectors.toList());
+
+		return fetchAvailabilityStatusConvertToDto(facilityLinkRepository.getAllBySourceFacilityId(facilityId)
+				.stream()
+				.map(FacilityLink::getMappedFacilty)
+				.collect(Collectors.toList()));
 	}
 
 	private void addBidirectionalLink(Integer facilityId1, Integer facilityId2) {
@@ -161,14 +174,14 @@ public class FacilityServices {
 		}
 	}
 
-	public List<Facility> getFacilities(int pageNo, String uid, FacilitySearchCriteria searchCriteria) throws CovidControlException {
+	public List<FacilityDto> getFacilities(int pageNo, String uid, FacilitySearchCriteria searchCriteria) throws CovidControlException {
 		AdminUser user=userServices.profile(uid);
 		Pageable pageRequest = PageRequest.of(pageNo - 1, Constants.PAGE_SIZE);
 
 		Page<Facility> page = facilityRepository.findAll(FacilitySearchSpecificaton.findByCriteria(searchCriteria,user.getRegion()),
 				pageRequest);
 
-		return page.toList();
+		return fetchAvailabilityStatusConvertToDto(page.toList());
 	}
 
 	private static class FacilitySearchSpecificaton {
@@ -179,11 +192,11 @@ public class FacilityServices {
 				@Override
 				public Predicate toPredicate(Root<Facility> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
 					List<Predicate> predicates = new ArrayList<>();
-					
+
 					Predicate predicateForRegion = cb.equal(root.get("region"),region);
-					
+
 					predicates.add(predicateForRegion);
-					
+
 					if (searchCriteria.getAreas() != null && !searchCriteria.getAreas().isEmpty()) {
 						predicates.add(root.get("area").in(searchCriteria.getAreas()));
 					}
@@ -197,12 +210,52 @@ public class FacilityServices {
 					if (searchCriteria.getFacilityStatus() != null && !searchCriteria.getFacilityStatus().isEmpty()) {
 						predicates.add(root.get("facilityStatus").in(searchCriteria.getFacilityStatus()));
 					}
-					
-					
+
+
 					return cb.and(predicates.toArray(new Predicate[predicates.size()]));
 				}
 			};
 		}
 	}
 
+
+	private FacilityDto toFacilityDto(Facility facility){
+		return FacilityDto.createFromFacility(facility);
+	}
+
+	private FacilityDto fetchAvailabilityStatusConvertToDto(Facility facility){
+		List<AvailabilityStatus> availabilityStatusList = wardRepository.getAvailabilityStatus(Collections.singletonList(facility.getFacilityId()));
+		return FacilityDto.createFromFacility(facility, availabilityStatusList);
+	}
+
+	private List<FacilityDto> toFacilityDto(List<Facility> facilities){
+		return facilities.stream().map(FacilityDto::createFromFacility).collect(Collectors.toList());
+	}
+
+	private List<FacilityDto> fetchAvailabilityStatusConvertToDto(List<Facility> facilities){
+		List<Integer> facilityIds = facilities.stream().map(Facility::getFacilityId).collect(Collectors.toList());
+		List<AvailabilityStatus> availabilityStatusList = wardRepository.getAvailabilityStatus(facilityIds);
+		return merge(facilities, availabilityStatusList);
+
+	}
+
+	private List<FacilityDto> merge(List<Facility> facilities, List<AvailabilityStatus> availabilityStatusList) {
+		Map<Integer, Facility> facilityMap = facilities.stream().collect(Collectors.toMap(Facility::getFacilityId, facility -> facility));
+		Map<Integer, List<AvailabilityStatus>> availabilityStatusMap = new HashMap<>();
+		for (AvailabilityStatus availabilityStatus : availabilityStatusList){
+			availabilityStatusMap.computeIfAbsent(availabilityStatus.getFacilityId(), (id) -> new LinkedList<>())
+					.add(availabilityStatus);
+		}
+		List<FacilityDto> facilityDtos = new LinkedList<>();
+		for(Map.Entry<Integer, Facility> facilityEntry: facilityMap.entrySet()){
+			Integer facilityId = facilityEntry.getKey();
+			Facility facility = facilityEntry.getValue();
+			List<AvailabilityStatus> availabilityStatus = availabilityStatusMap.getOrDefault(facilityId, Collections.emptyList());
+
+			FacilityDto facilityDto = FacilityDto.createFromFacility(facility, availabilityStatus);
+
+			facilityDtos.add(facilityDto);
+		}
+		return facilityDtos;
+	}
 }
