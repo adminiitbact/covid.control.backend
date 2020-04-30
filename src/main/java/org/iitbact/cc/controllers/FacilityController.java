@@ -36,7 +36,7 @@ public class FacilityController {
 	@ApiOperation(response = FacilityProfile.class, value = "API request to create a new facility")
 	public ResponseBean<FacilityProfile> createFacility(@RequestBody FacilityRequest facilityRequest) {
 		return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
-				(uid) -> facilityServices.createFacility(facilityRequest));
+				(uid) -> facilityServices.createFacility(facilityRequest,uid));
 	}
 
 	@PostMapping(path = "/facilities/{facilityId}/post")
@@ -44,7 +44,7 @@ public class FacilityController {
 	public ResponseBean<FacilityProfile> editFacility(@PathVariable int facilityId,
 			@RequestBody FacilityRequest facilityRequest) {
 		return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
-				(uid) -> facilityServices.editFacility(facilityId, facilityRequest));
+				(uid) -> facilityServices.editFacility(facilityId, facilityRequest,uid));
 	}
 
 	@PostMapping(path = "/facilities/{facilityId}/get")
@@ -70,7 +70,7 @@ public class FacilityController {
     @PostMapping(path = "/facilities/{pageNo}")
     @ApiOperation(response = Facility.class,responseContainer = "List", value = "API to fetch all facilities wrt filters")
     public ResponseBean<ListResponse<FacilityDto>> getFacilities(@PathVariable int pageNo, @RequestBody FacilitySearchCriteria request){
-        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilities(pageNo,request));
+        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilities(pageNo,uid, request));
     }
     
 }
