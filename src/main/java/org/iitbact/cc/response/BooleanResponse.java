@@ -8,8 +8,9 @@ public class BooleanResponse implements BaseBean<Boolean> {
 
     private Boolean success;
 
-    @Override
-    public void setEntity(Boolean success) {
-        this.success = success;
-    }
+	@Override
+	public void setEntity(Boolean entity) {
+		this.success=entity;
+	}
+    
 }

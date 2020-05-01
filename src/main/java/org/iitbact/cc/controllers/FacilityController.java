@@ -2,6 +2,7 @@ package org.iitbact.cc.controllers;
 
 import org.iitbact.cc.beans.FacilityManagement;
 import org.iitbact.cc.beans.ResponseBean;
+import org.iitbact.cc.dto.FacilityDto;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.helper.ControllerWrapper;
 import org.iitbact.cc.requests.BaseRequest;
@@ -36,7 +37,7 @@ public class FacilityController {
 	@ApiOperation(response = FacilityProfile.class, value = "API request to create a new facility")
 	public ResponseBean<FacilityProfile> createFacility(@RequestBody FacilityRequest facilityRequest) {
 		return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
-				(uid) -> facilityServices.createFacility(facilityRequest));
+				(uid) -> facilityServices.createFacility(facilityRequest,uid));
 	}
 
 	@PostMapping(path = "/facilities/{facilityId}/post")
@@ -44,7 +45,7 @@ public class FacilityController {
 	public ResponseBean<FacilityProfile> editFacility(@PathVariable int facilityId,
 			@RequestBody FacilityRequest facilityRequest) {
 		return controllerWrapper.wrap(FacilityProfile::new, facilityRequest,
-				(uid) -> facilityServices.editFacility(facilityId, facilityRequest.getFacility()));
+				(uid) -> facilityServices.editFacility(facilityId, facilityRequest,uid));
 	}
 
 	@PostMapping(path = "/facilities/{facilityId}/get")
@@ -61,16 +62,16 @@ public class FacilityController {
         return controllerWrapper.wrap(BooleanResponse::new, request, (uid) -> facilityServices.linkFacilities(facilityId, request));
     }
 
-    @PostMapping(path = "/facilitiesy/{facilityId}/links/get")
+    @PostMapping(path = "/facilities/{facilityId}/links/get")
     @ApiOperation(response = BooleanResponse.class,responseContainer = "List", value = "API to fetch links between facilities")
-    public ResponseBean<ListResponse<Facility>> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
+    public ResponseBean<ListResponse<FacilityDto>> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
         return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getLinkedFacilities(facilityId));
     }
     
     @PostMapping(path = "/facilities/{pageNo}")
     @ApiOperation(response = Facility.class,responseContainer = "List", value = "API to fetch all facilities wrt filters")
-    public ResponseBean<ListResponse<Facility>> getFacilities(@PathVariable int pageNo, @RequestBody FacilitySearchCriteria request){
-        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilities(pageNo,request));
+    public ResponseBean<ListResponse<FacilityDto>> getFacilities(@PathVariable int pageNo, @RequestBody FacilitySearchCriteria request){
+        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilities(pageNo,uid, request));
     }
     
     @PostMapping(path = "/facilities/management/{pageNo}")

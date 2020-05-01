@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -37,7 +39,7 @@ public class Facility implements Serializable {
 	private String address;
 
 	@Column(name = "agreement_status")
-	private String agreementStatus;
+	private String agreementStatus="Unassigned";
 
 	private String area;
 
@@ -49,16 +51,16 @@ public class Facility implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "facility_id")
-	private int facilityId;
+	private Integer facilityId;
 
 	@Column(name = "facility_status")
-	private String facilityStatus;
+	private String facilityStatus="Unassigned";
 
 	@Column(name = "government_hospital")
 	private byte governmentHospital;
 
 	@Column(name = "hospital_category")
-	private String hospitalCategory;
+	private String hospitalCategory="Unassigned";
 
 	@Column(name = "institution_type")
 	private String institutionType;
@@ -80,12 +82,29 @@ public class Facility implements Serializable {
 
 	@Column(name = "ulb_zone_name")
 	private String ulbZoneName;
+	
+	private int region;
 
 	// bi-directional one-to-one association to FacilityContact
-	@OneToOne(mappedBy = "facility", cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL,
+			fetch = FetchType.EAGER)
 	private FacilityContact facilityContact;
 
-	public void copy(Facility that) {
+	@PrePersist
+	@PreUpdate
+	public void prepersist(){
+	    if(agreementStatus == null){
+	        agreementStatus = "Unassigned";
+        }
+	    if(facilityStatus == null){
+	        facilityStatus = "Unassigned";
+        }
+	    if(hospitalCategory == null){
+	        hospitalCategory = "Unassigned";
+        }
+    }
+
+	public void copy(Facility that,AdminUser user) {
 		this.address = that.address;
 		this.agreementStatus = that.agreementStatus;
 		this.area = that.area;
@@ -93,7 +112,7 @@ public class Facility implements Serializable {
 		this.email = that.email;
 		this.facilityStatus = that.facilityStatus;
 		this.governmentHospital = that.governmentHospital;
-		this.hospitalCategory = that.hospitalCategory;
+		//this.hospitalCategory = that.hospitalCategory;
 		this.institutionType = that.institutionType;
 		this.isFeverClinicAvailable = that.isFeverClinicAvailable;
 		this.isSeperateEntryExitAvailable = that.isSeperateEntryExitAvailable;
@@ -102,5 +121,8 @@ public class Facility implements Serializable {
 		this.telephone = that.telephone;
 		this.ulbWardName = that.ulbWardName;
 		this.ulbZoneName = that.ulbZoneName;
+		this.facilityContact = that.facilityContact;
+		this.facilityContact.setFacilityId(this.facilityId);
+		this.region=user.getRegion();
 	}
 }
