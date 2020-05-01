@@ -194,8 +194,10 @@ public class FacilityServices {
 					List<Predicate> predicates = new ArrayList<>();
 
 					Predicate predicateForRegion = cb.equal(root.get("region"),region);
-
 					predicates.add(predicateForRegion);
+
+					Predicate predicateForName = cb.like(cb.lower(root.get("name")), "%" + searchCriteria.getName().toLowerCase() + "%");
+					predicates.add(predicateForName);
 
 					if (searchCriteria.getAreas() != null && !searchCriteria.getAreas().isEmpty()) {
 						predicates.add(root.get("area").in(searchCriteria.getAreas()));
