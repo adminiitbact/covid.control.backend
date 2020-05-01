@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.iitbact.cc.beans.FacilityManagement;
 import org.iitbact.cc.constants.Constants;
 import org.iitbact.cc.constants.LinkingStatus;
 import org.iitbact.cc.entities.Facility;
@@ -192,6 +193,18 @@ public class FacilityServices {
 				}
 			};
 		}
+	}
+
+	public List<FacilityManagement> getFacilyManagementList(int pageNo, FacilitySearchCriteria request) {
+		 List<Facility> facilities = getFacilities(pageNo, request) ;
+		 List<Integer> facilityIds = new ArrayList<>();
+		 facilities.forEach(facility->{
+			 facilityIds.add(facility.getFacilityId());
+		 });
+		
+		 
+			
+		return null;
 	}
 
 }

@@ -1,5 +1,6 @@
 package org.iitbact.cc.controllers;
 
+import org.iitbact.cc.beans.FacilityManagement;
 import org.iitbact.cc.beans.ResponseBean;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.helper.ControllerWrapper;
@@ -70,6 +71,12 @@ public class FacilityController {
     @ApiOperation(response = Facility.class,responseContainer = "List", value = "API to fetch all facilities wrt filters")
     public ResponseBean<ListResponse<Facility>> getFacilities(@PathVariable int pageNo, @RequestBody FacilitySearchCriteria request){
         return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilities(pageNo,request));
+    }
+    
+    @PostMapping(path = "/facilities/management/{pageNo}")
+    @ApiOperation(response = Facility.class,responseContainer = "List", value = "API to fetch facility management data list wrt filters")
+    public ResponseBean<ListResponse<FacilityManagement>> getFacilitiesWithManagement(@PathVariable int pageNo, @RequestBody FacilitySearchCriteria request){
+        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilyManagementList(pageNo,request));
     }
     
 }
