@@ -21,4 +21,9 @@ public interface FacilityLinkRepository extends JpaRepository<FacilityLink, Inte
      * Returns all the facility links associated with the source facility
      */
     List<FacilityLink> getAllBySourceFacilityId(Integer sourceFacilityId);
+
+    /**
+     * Checks if any entry with the sourceFacility exists or not
+     */
+    Boolean existsBySourceFacilityId(Integer sourceFacilityId);
 }

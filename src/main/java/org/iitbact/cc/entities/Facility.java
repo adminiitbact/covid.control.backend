@@ -86,25 +86,32 @@ public class Facility implements Serializable {
 
 	private int region;
 
+	@Column(name = "has_links")
+	private Boolean hasLinks;
+
 	// bi-directional one-to-one association to FacilityContact
 	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private FacilityContact facilityContact;
 
 	@PrePersist
 	@PreUpdate
-	public void prepersist() {
-		if (agreementStatus == null) {
-			agreementStatus = "Unassigned";
+	public void prepersist(){
+	    if(agreementStatus == null){
+	        agreementStatus = "Unassigned";
+        }
+	    if(facilityStatus == null){
+	        facilityStatus = "Unassigned";
+        }
+	    if(hospitalCategory == null){
+	        hospitalCategory = "Unassigned";
+        }
+	    // This will be null only for the first time, will be updated only by through automatic logic
+	    if(hasLinks == null){
+	    	hasLinks = false;
 		}
-		if (facilityStatus == null) {
-			facilityStatus = "Unassigned";
-		}
-		if (hospitalCategory == null) {
-			hospitalCategory = "Unassigned";
-		}
-	}
+    }
 
-	public void copy(Facility that, AdminUser user) {
+	public void copy(Facility that,AdminUser user) {
 		this.address = that.address;
 		this.agreementStatus = that.agreementStatus;
 		this.area = that.area;
@@ -124,5 +131,7 @@ public class Facility implements Serializable {
 		this.facilityContact = that.facilityContact;
 		this.facilityContact.setFacilityId(this.facilityId);
 		this.region = user.getRegion();
+		// hasLinks will not be updated through the front-end ever.
+
 	}
 }

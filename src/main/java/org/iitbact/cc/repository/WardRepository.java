@@ -13,14 +13,13 @@ public interface WardRepository extends JpaRepository<Ward, Integer>,JpaSpecific
 
     @Query(value = "select new org.iitbact.cc.dto.AvailabilityStatus(w.facilityId," +
             " w.severity," +
-            " w.covidStatus, " +
             "sum(w.totalBeds), " +
             "sum(w.availableBeds), " +
             "sum(w.ventilators), " +
             "sum(w.ventilatorsOccupied)) " +
             "from Ward w " +
             "where w.facilityId in ?1 " +
-            "group by w.facilityId,w.severity,w.covidStatus")
+            "group by w.facilityId,w.severity")
     List<AvailabilityStatus> getAvailabilityStatus(@Param("facilities") List<Integer> facilities);
     
 }
