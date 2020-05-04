@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -39,7 +40,7 @@ public class Facility implements Serializable {
 	private String address;
 
 	@Column(name = "agreement_status")
-	private String agreementStatus="Unassigned";
+	private String agreementStatus = "Unassigned";
 
 	private String area;
 
@@ -54,13 +55,13 @@ public class Facility implements Serializable {
 	private Integer facilityId;
 
 	@Column(name = "facility_status")
-	private String facilityStatus="Unassigned";
+	private String facilityStatus = "Unassigned";
 
 	@Column(name = "government_hospital")
 	private byte governmentHospital;
 
 	@Column(name = "hospital_category")
-	private String hospitalCategory="Unassigned";
+	private String hospitalCategory = "Unassigned";
 
 	@Column(name = "institution_type")
 	private String institutionType;
@@ -82,15 +83,14 @@ public class Facility implements Serializable {
 
 	@Column(name = "ulb_zone_name")
 	private String ulbZoneName;
-	
+
 	private int region;
 
 	@Column(name = "has_links")
 	private Boolean hasLinks;
 
 	// bi-directional one-to-one association to FacilityContact
-	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL,
-			fetch = FetchType.EAGER)
+	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private FacilityContact facilityContact;
 
 	@PrePersist
@@ -119,7 +119,7 @@ public class Facility implements Serializable {
 		this.email = that.email;
 		this.facilityStatus = that.facilityStatus;
 		this.governmentHospital = that.governmentHospital;
-		//this.hospitalCategory = that.hospitalCategory;
+		// this.hospitalCategory = that.hospitalCategory;
 		this.institutionType = that.institutionType;
 		this.isFeverClinicAvailable = that.isFeverClinicAvailable;
 		this.isSeperateEntryExitAvailable = that.isSeperateEntryExitAvailable;
@@ -132,5 +132,6 @@ public class Facility implements Serializable {
 		this.facilityContact.setFacilityId(this.facilityId);
 		this.region = user.getRegion();
 		// hasLinks will not be updated through the front-end ever.
+
 	}
 }
