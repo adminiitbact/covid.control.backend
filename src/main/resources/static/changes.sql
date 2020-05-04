@@ -11,3 +11,10 @@ ALTER TABLE `admin_users`
 	
 	ALTER TABLE `hospital_users`
 	ADD COLUMN `region` TINYINT NOT NULL DEFAULT '1' AFTER `facility_id`;
+
+alter table facilities
+    add column has_links not null default false;
+
+    update facilities f,facility_mapping m
+    set has_links = true
+    where f.facility_id = m.source_facility;
