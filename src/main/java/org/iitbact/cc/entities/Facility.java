@@ -85,6 +85,9 @@ public class Facility implements Serializable {
 	
 	private int region;
 
+	@Column(name = "has_links")
+	private Boolean hasLinks;
+
 	// bi-directional one-to-one association to FacilityContact
 	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL,
 			fetch = FetchType.EAGER)

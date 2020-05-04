@@ -12,6 +12,7 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class FacilitySearchCriteria extends BaseRequest {
 	private String name;
+	private Boolean hasLinks;
 	private List<String> covidFacilityType;
 	private List<String> areas;
 	private List<String> jurisdictions;
