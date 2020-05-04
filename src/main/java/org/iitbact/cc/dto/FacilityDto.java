@@ -32,6 +32,7 @@ public class FacilityDto {
     private String ulbZoneName;
     private FacilityContact facilityContact;
     private List<AvailabilityStatus> availabilityStatusList;
+    private Boolean hasLinks;
 
 
     public static FacilityDto createFromFacility(Facility facility){
@@ -59,6 +60,7 @@ public class FacilityDto {
                 .ulbZoneName(facility.getUlbZoneName())
                 .facilityContact(facility.getFacilityContact())
                 .availabilityStatusList(availabilityStatus)
+                .hasLinks(facility.getHasLinks())
                 .build();
     }
 

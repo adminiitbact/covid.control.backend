@@ -120,6 +120,7 @@ public class FacilityServices {
 			} else if (link.getLinkingStatus() == LinkingStatus.UNLINK) {
 				removeBidirectionalLink(facilityId, link.getFacilityId());
 			}
+			updateHasLinksField(facilityId, link.getFacilityId());
 		}
 		return true;
 	}
@@ -138,6 +139,18 @@ public class FacilityServices {
 	private void addBidirectionalLink(Integer facilityId1, Integer facilityId2) {
 		addSingleLink(facilityId1, facilityId2);
 		addSingleLink(facilityId2, facilityId1);
+	}
+
+	private void updateHasLinksField(Integer facilityId1, Integer facilityId2) {
+		updateHasLinksField(facilityId1);
+		updateHasLinksField(facilityId2);
+	}
+
+	private void updateHasLinksField(Integer facilityId) {
+		Boolean hasLinksIssue = facilityLinkRepository.findById(facilityId).isPresent();
+		Facility facility = facilityRepository.getOne(facilityId);
+		facility.setHasLinks(hasLinksIssue);
+		facilityRepository.save(facility);
 	}
 
 	private void addSingleLink(Integer sourceFacilityId, Integer mappedFacilityId) {
@@ -199,6 +212,10 @@ public class FacilityServices {
 					if(searchCriteria.getName() != null && !searchCriteria.getName().isEmpty()) {
 						Predicate predicateForName = cb.like(cb.lower(root.get("name")), "%" + searchCriteria.getName().toLowerCase() + "%");
 						predicates.add(predicateForName);
+					}
+
+					if(searchCriteria.getHasLinks() != null){
+						predicates.add(cb.equal(root.get("hasLinks"), searchCriteria.getHasLinks()));
 					}
 
 					if (searchCriteria.getAreas() != null && !searchCriteria.getAreas().isEmpty()) {
