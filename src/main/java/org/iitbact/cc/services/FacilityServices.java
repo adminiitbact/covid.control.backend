@@ -147,9 +147,10 @@ public class FacilityServices {
 	}
 
 	private void updateHasLinksField(Integer facilityId) {
-		Boolean hasLinksIssue = facilityLinkRepository.findById(facilityId).isPresent();
+		Boolean hasLinks = facilityLinkRepository.existsBySourceFacilityId(facilityId);
+		log.info("Setting has_links to {} for facility Id {}", hasLinks, facilityId);
 		Facility facility = facilityRepository.getOne(facilityId);
-		facility.setHasLinks(hasLinksIssue);
+		facility.setHasLinks(hasLinks);
 		facilityRepository.save(facility);
 	}
 

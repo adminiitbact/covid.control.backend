@@ -105,6 +105,10 @@ public class Facility implements Serializable {
 	    if(hospitalCategory == null){
 	        hospitalCategory = "Unassigned";
         }
+	    // This will be null only for the first time, will be updated only by through automatic logic
+	    if(hasLinks == null){
+	    	hasLinks = false;
+		}
     }
 
 	public void copy(Facility that,AdminUser user) {
@@ -126,6 +130,7 @@ public class Facility implements Serializable {
 		this.ulbZoneName = that.ulbZoneName;
 		this.facilityContact = that.facilityContact;
 		this.facilityContact.setFacilityId(this.facilityId);
-		this.region=user.getRegion();
+		this.region = user.getRegion();
+		// hasLinks will not be updated through the front-end ever.
 	}
 }
