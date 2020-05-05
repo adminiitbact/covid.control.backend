@@ -28,7 +28,7 @@ import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 @EnableBatchProcessing
-public class PatientCsvExtractor extends DefaultBatchConfigurer {
+public class PatientCsvExporter extends DefaultBatchConfigurer {
 
 	@Autowired
 	private JobBuilderFactory jobBuilderFactory;
