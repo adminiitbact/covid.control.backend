@@ -47,7 +47,7 @@ public class PaitentController {
     public void getFile(HttpServletResponse response) throws IOException {
     	
     	ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-    	File file = new File(classloader.getResource("patients.csv").getFile());;
+    	File file = new File(classloader.getResource("patients.csv").getFile());
          
         response.setContentType("text/csv");
 		response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
