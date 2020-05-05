@@ -10,7 +10,6 @@ import lombok.Data;
 public class AvailabilityStatus {
     private Integer facilityId;
     private String severity;
-    private String covidStatus;
     private Long totalBeds;
     private Long availableBeds;
     private Long totalVentilators;

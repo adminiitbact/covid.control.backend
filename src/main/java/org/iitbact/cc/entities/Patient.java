@@ -4,33 +4,36 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 /**
  * The persistent class for the patients database table.
  */
-@Data
-@NoArgsConstructor
 @Entity
 @Table(name = "patients")
 @NamedQuery(name = "Patient.findAll", query = "SELECT p FROM Patient p")
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@TypeDef(name = "json", typeClass = JsonStringType.class)
+@Data
+@NoArgsConstructor
 public class Patient implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+		
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "patient_id")
 	private Integer patientId;
 	
@@ -53,6 +56,7 @@ public class Patient implements Serializable {
 	@Column(name = "address")
 	private String address;
 	
+	@Lob
 	@Column(name = "locality")
 	private String locality;
 	
