@@ -1,6 +1,7 @@
 package org.iitbact.cc.controllers;
 
 import org.iitbact.cc.beans.ResponseBean;
+import org.iitbact.cc.dto.FacilityDto;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.helper.ControllerWrapper;
 import org.iitbact.cc.requests.BaseRequest;
@@ -61,15 +62,15 @@ public class FacilityController {
     }
 
     @PostMapping(path = "/facilities/{facilityId}/links/get")
-    @ApiOperation(response = BooleanResponse.class,responseContainer = "List", value = "API to fetch links between facilities")
-    public ResponseBean<ListResponse<Facility>> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
+    @ApiOperation(response = FacilityDto.class,responseContainer = "List", value = "API to fetch links between facilities")
+    public ResponseBean<ListResponse<FacilityDto>> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
         return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getLinkedFacilities(facilityId));
     }
     
     @PostMapping(path = "/facilities/{pageNo}")
-    @ApiOperation(response = Facility.class,responseContainer = "List", value = "API to fetch all facilities wrt filters")
-    public ResponseBean<ListResponse<Facility>> getFacilities(@PathVariable int pageNo, @RequestBody FacilitySearchCriteria request){
-        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilities(pageNo,uid,request));
+    @ApiOperation(response = FacilityDto.class,responseContainer = "List", value = "API to fetch all facilities wrt filters")
+    public ResponseBean<ListResponse<FacilityDto>> getFacilities(@PathVariable int pageNo, @RequestBody FacilitySearchCriteria request){
+        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilities(pageNo,uid, request));
     }
     
 }
