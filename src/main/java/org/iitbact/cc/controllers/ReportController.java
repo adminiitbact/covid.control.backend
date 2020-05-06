@@ -5,11 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.iitbact.cc.entities.Area;
 import org.iitbact.cc.services.ReportService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.FileCopyUtils;
@@ -33,8 +31,7 @@ public class ReportController {
 	@ApiOperation(value = "API request to export facilities report")
 	public void getFacilitiesReport(HttpServletResponse response) throws IOException {
 
-		List<String> data = reportService.fetchFacilityData();
-		File file = reportService.writeCsvFile(data, "facilities.csv");
+		File file = reportService.writeCsvFile(reportService.fetchFacilityData(), "facilities.csv");
 
 		response.setContentType("text/csv");
 		response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
@@ -50,8 +47,7 @@ public class ReportController {
 	@ApiOperation(value = "API request to export patients report")
 	public void getPatientsReport(HttpServletResponse response) throws IOException {
 
-		List<String> data = reportService.fetchPatientData();
-		File file = reportService.writeCsvFile(data, "patients.csv");
+		File file = reportService.writeCsvFile(reportService.fetchPatientData(), "patients.csv");
 
 		response.setContentType("text/csv");
 		response.setHeader(HttpHeaders.CONTENT_DISPOSITION,
