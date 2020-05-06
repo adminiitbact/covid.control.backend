@@ -20,7 +20,7 @@ import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.entities.Patient;
 import org.iitbact.cc.entities.PatientLiveStatus;
 import org.iitbact.cc.exceptions.CovidControlException;
-import org.iitbact.cc.requests.PaitentSearchCriteria;
+import org.iitbact.cc.requests.PatientSearchCriteria;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -30,18 +30,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class PaitentServices {
+public class PatientServices {
 
 	@PersistenceContext
 	private EntityManager em;
 
 	private final UserServices userServices;
 
-	public PaitentServices(UserServices userServices) {
+	public PatientServices(UserServices userServices) {
 		this.userServices = userServices;
 	}
 
-	public List<PatientDto> getPatients(int pageNo, String uid, PaitentSearchCriteria searchCriteria)
+	public List<PatientDto> getPatients(int pageNo, String uid, PatientSearchCriteria searchCriteria)
 			throws CovidControlException {
 		AdminUser user = userServices.profile(uid);
 

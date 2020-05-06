@@ -3,9 +3,9 @@ package org.iitbact.cc.controllers;
 import org.iitbact.cc.beans.ResponseBean;
 import org.iitbact.cc.dto.PatientDto;
 import org.iitbact.cc.helper.ControllerWrapper;
-import org.iitbact.cc.requests.PaitentSearchCriteria;
+import org.iitbact.cc.requests.PatientSearchCriteria;
 import org.iitbact.cc.response.ListResponse;
-import org.iitbact.cc.services.PaitentServices;
+import org.iitbact.cc.services.PatientServices;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,20 +16,20 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api")
-public class PaitentController {
+public class PatientController {
 
 	private final ControllerWrapper controllerWrapper;
-	private final PaitentServices paitentServices;
+	private final PatientServices patientServices;
 
-	public PaitentController(ControllerWrapper controllerWrapper, PaitentServices paitentServices) {
+	public PatientController(ControllerWrapper controllerWrapper, PatientServices patientServices) {
 		this.controllerWrapper = controllerWrapper;
-		this.paitentServices = paitentServices;
+		this.patientServices = patientServices;
 	}
     
     @PostMapping(path = "/patients/{pageNo}")
     @ApiOperation(response = PatientDto.class,responseContainer = "List", value = "API to fetch all active patient wrt filters")
-    public ResponseBean<ListResponse<PatientDto>> getPatients(@PathVariable int pageNo, @RequestBody PaitentSearchCriteria request){
-        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> paitentServices.getPatients(pageNo,uid, request));
+    public ResponseBean<ListResponse<PatientDto>> getPatients(@PathVariable int pageNo, @RequestBody PatientSearchCriteria request){
+        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientServices.getPatients(pageNo,uid, request));
     }
     
 }
