@@ -1,10 +1,8 @@
 package org.iitbact.cc.controllers;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,9 +36,7 @@ public class ReportController {
 				"attachment; filename=\"facilities.csv\"");
 		response.setContentLength((int) file.length());
 
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
+		FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
 	}
 
 	@RequestMapping(value = "/patients", method = RequestMethod.POST)
@@ -54,9 +50,7 @@ public class ReportController {
 				"attachment; filename=\"patients.csv\"");
 		response.setContentLength((int) file.length());
 
-		InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
-
-		FileCopyUtils.copy(inputStream, response.getOutputStream());
+		FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
 	}
 
 }
