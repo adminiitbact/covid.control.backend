@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iitbact.cc.entities.AdminUser;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.entities.Patient;
+import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.repository.FacilityRepository;
 import org.iitbact.cc.repository.PatientRepository;
 import org.springframework.stereotype.Service;
@@ -19,15 +21,19 @@ public class ReportService {
 
 	private final FacilityRepository facilityRepository;
 	private final PatientRepository patientRepository;
+	private final UserServices userService;
 
 	public ReportService(FacilityRepository facilityRepository,
-			PatientRepository patientRepository) {
+			PatientRepository patientRepository, UserServices userService) {
 		this.facilityRepository = facilityRepository;
 		this.patientRepository = patientRepository;
+		this.userService = userService;
 	}
 
-	public List<String[]> fetchFacilityData() {
-		List<Facility> facilities = facilityRepository.findAll();
+	public List<String[]> fetchFacilityData(String uid) throws CovidControlException {
+		AdminUser user = userService.profile(uid);
+		List<Facility> facilities = facilityRepository.findByRegion(user.getRegion());
+		
 		List<String[]> entries = new ArrayList<>();
 
 		// Add header for the CSV file.
@@ -42,8 +48,10 @@ public class ReportService {
 
 	}
 
-	public List<String[]> fetchPatientData() {
+	public List<String[]> fetchPatientData(String uid) throws CovidControlException {
+		AdminUser user = userService.profile(uid);
 		List<Patient> patients = patientRepository.findAll();
+
 		List<String[]> entries = new ArrayList<>();
 
 		// Add header for the CSV file.
