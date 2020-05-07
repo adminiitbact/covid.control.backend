@@ -16,6 +16,8 @@ import lombok.Data;
 public class PaitentSearchCriteria extends BaseRequest {
 	private String name;
 	
+	private List<Integer> facilityIds;
+	
 	@ApiModelProperty(value="checkbox just like facility")
 	private List<String> covidFacilityType;
 	

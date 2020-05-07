@@ -77,6 +77,11 @@ public class PaitentServices {
 		if (searchCriteria.getAreas() != null && !searchCriteria.getAreas().isEmpty()) {
 			predicates.add(join2.get("area").in(searchCriteria.getAreas()));
 		}
+		
+		if (searchCriteria.getFacilityIds() != null && !searchCriteria.getFacilityIds().isEmpty()) {
+			predicates.add(join2.get("facilityId").in(searchCriteria.getFacilityIds()));
+		}
+		
 		if (searchCriteria.getCovidFacilityType() != null && !searchCriteria.getCovidFacilityType().isEmpty()) {
 			predicates.add(join2.get("covidFacilityType").in(searchCriteria.getCovidFacilityType()));
 		}
