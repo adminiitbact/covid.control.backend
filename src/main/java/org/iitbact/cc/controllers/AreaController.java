@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import io.swagger.annotations.ApiOperation;
 
-@Controller
+@RestController
 @RequestMapping("/api/areas")
 public class AreaController {
 
