@@ -81,7 +81,7 @@ public class PaitentServices {
 		if (searchCriteria.getFacilityIds() != null && !searchCriteria.getFacilityIds().isEmpty()) {
 			predicates.add(join2.get("facilityId").in(searchCriteria.getFacilityIds()));
 		}
-		
+
 		if (searchCriteria.getCovidFacilityType() != null && !searchCriteria.getCovidFacilityType().isEmpty()) {
 			predicates.add(join2.get("covidFacilityType").in(searchCriteria.getCovidFacilityType()));
 		}
