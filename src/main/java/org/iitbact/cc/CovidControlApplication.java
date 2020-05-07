@@ -22,7 +22,7 @@ public class CovidControlApplication {
 
     @Autowired
     DataSource dataSource;
-
+    
     @Value("${swagger.host}")
     private String swaggerHost;
 
