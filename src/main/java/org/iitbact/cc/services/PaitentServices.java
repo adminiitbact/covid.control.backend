@@ -50,8 +50,6 @@ public class PaitentServices {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PatientDto> cq = cb.createQuery(PatientDto.class);
 		Root<PatientLiveStatus> root = cq.from(PatientLiveStatus.class);
-		// List<Predicate> predicates = new ArrayList<Predicate>();
-		
 		
 		Join<Patient, PatientLiveStatus> join1 =  root.join("patient", JoinType.INNER);
 		Join<Facility, PatientLiveStatus> join2 = root.join("facility", JoinType.INNER);
