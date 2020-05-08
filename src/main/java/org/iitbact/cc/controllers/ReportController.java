@@ -51,7 +51,6 @@ public class ReportController {
 	@RequestMapping(value = "/patients", method = RequestMethod.POST)
 	@ApiOperation(value = "API request to export patients report")
 	public void getPatientsReport(HttpServletResponse response, @RequestBody BaseRequest reportRequest) {
-
 		try {
 			String userId = validationService.verifyFirebaseIdToken(reportRequest.getAuthToken());
 			File file = reportService.writeCsvFile(reportService.fetchPatientData(userId), "patients.csv");
