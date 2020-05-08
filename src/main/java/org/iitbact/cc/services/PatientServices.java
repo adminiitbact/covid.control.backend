@@ -50,8 +50,6 @@ public class PatientServices {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<PatientDto> cq = cb.createQuery(PatientDto.class);
 		Root<PatientLiveStatus> root = cq.from(PatientLiveStatus.class);
-		// List<Predicate> predicates = new ArrayList<Predicate>();
-		
 		
 		Join<Patient, PatientLiveStatus> join1 =  root.join("patient", JoinType.INNER);
 		Join<Facility, PatientLiveStatus> join2 = root.join("facility", JoinType.INNER);
@@ -79,6 +77,11 @@ public class PatientServices {
 		if (searchCriteria.getAreas() != null && !searchCriteria.getAreas().isEmpty()) {
 			predicates.add(join2.get("area").in(searchCriteria.getAreas()));
 		}
+		
+		if (searchCriteria.getFacilityIds() != null && !searchCriteria.getFacilityIds().isEmpty()) {
+			predicates.add(join2.get("facilityId").in(searchCriteria.getFacilityIds()));
+		}
+
 		if (searchCriteria.getCovidFacilityType() != null && !searchCriteria.getCovidFacilityType().isEmpty()) {
 			predicates.add(join2.get("covidFacilityType").in(searchCriteria.getCovidFacilityType()));
 		}
