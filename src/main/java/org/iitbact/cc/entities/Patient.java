@@ -1,6 +1,7 @@
 package org.iitbact.cc.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -85,6 +86,7 @@ public class Patient implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 	
+
 	@Column(name = "occupation")
 	private String occupation;
 	
@@ -99,4 +101,7 @@ public class Patient implements Serializable {
 	
 	@Column(name = "covid_uid")
 	private String covid_uid;
+	
+	@Column(name = "creation_time")
+	private Date creationTime;
 }
