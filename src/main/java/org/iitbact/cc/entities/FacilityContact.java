@@ -44,7 +44,6 @@ public class FacilityContact implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name="facility_id")
 	private Integer facilityId;
 	
 	@Type(type = "json")

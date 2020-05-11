@@ -57,7 +57,6 @@ public class Facility implements Serializable {
 	@Column(name = "facility_status")
 	private String facilityStatus = "Unassigned";
 
-
 	@Column(name = "government_hospital")
 	private byte governmentHospital;
 
