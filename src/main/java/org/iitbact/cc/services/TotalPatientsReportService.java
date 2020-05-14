@@ -10,14 +10,18 @@ import javax.persistence.Query;
 import org.iitbact.cc.entities.AdminUser;
 import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.requests.CommonReportCriteria;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Service;
 
 @Service
 public class TotalPatientsReportService {
+
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(PatientDischargeReportService.class);
+
 
 	@PersistenceContext
 	private EntityManager em;
@@ -30,10 +34,10 @@ public class TotalPatientsReportService {
 
 	public List<String[]> fetchSumIsolationPatientList(String uid, CommonReportCriteria commonReportCriteria)
 			throws CovidControlException {
-		
+
 		System.out.println("fetchSumIsolationPatientList  start");
 		LOGGER.debug("fetchSumIsolationPatientList start");
-		
+
 		AdminUser user = userService.profile(uid);
 
 		List<String[]> entries = new ArrayList<>();
@@ -81,9 +85,10 @@ public class TotalPatientsReportService {
 			entries.add(new String[] {"", p[0].toString(), admittedCount.toString(), dischargedCount.toString() });
 		}
 		entries.add(new String[] { "Total", "-", totalAdmittedCount.toString(), totalDischargedCount.toString() });
+
 		System.out.println("fetchSumIsolationPatientList  end");
 		LOGGER.debug("fetchSumIsolationPatientList end");
-		
+
 		return entries;
 	}
 }
