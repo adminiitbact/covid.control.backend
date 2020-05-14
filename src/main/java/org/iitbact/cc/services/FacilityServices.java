@@ -257,6 +257,10 @@ public class FacilityServices {
 						predicates.add(cb.equal(root.get("hasLinks"), searchCriteria.getHasLinks()));
 					}
 
+					if(searchCriteria.getOperatingStatus() != null){
+						predicates.add(cb.equal(root.get("operatingStatus"), searchCriteria.getOperatingStatus()));
+					}
+
 					if (searchCriteria.getAreas() != null && !searchCriteria.getAreas().isEmpty()) {
 						predicates.add(root.get("area").in(searchCriteria.getAreas()));
 					}
