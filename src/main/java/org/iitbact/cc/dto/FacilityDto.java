@@ -33,6 +33,7 @@ public class FacilityDto {
     private FacilityContact facilityContact;
     private List<AvailabilityStatus> availabilityStatusList;
     private Boolean hasLinks;
+    private Boolean operatingStatus;
 
 
     public static FacilityDto createFromFacility(Facility facility){
@@ -61,6 +62,7 @@ public class FacilityDto {
                 .facilityContact(facility.getFacilityContact())
                 .availabilityStatusList(availabilityStatus)
                 .hasLinks(facility.getHasLinks())
+                .operatingStatus(facility.getOperatingStatus())
                 .build();
     }
 

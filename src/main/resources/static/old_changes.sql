@@ -15,8 +15,11 @@ ALTER TABLE `admin_users`
 
 	
 	alter table facilities
-    add column has_links not null default false;
+    add column has_links tinyint not null default false;
 
     update facilities f,facility_mapping m
     set has_links = true
     where f.facility_id = m.source_facility;
+
+    alter table facilities
+    add column operating_status tinyint not null default false;
