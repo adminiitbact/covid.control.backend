@@ -3,7 +3,6 @@ package org.iitbact.cc.controllers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -13,28 +12,18 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 
 import org.iitbact.cc.constants.ReportNames;
-
 import org.iitbact.cc.exceptions.CovidControlErpError;
-import org.iitbact.cc.exceptions.CovidControlErrorCode;
-import org.iitbact.cc.exceptions.CovidControlErrorMsg;
-
 import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.requests.CommonReportCriteria;
 import org.iitbact.cc.services.ApiValidationService;
 import org.iitbact.cc.services.PatientDischargeReportService;
-
-import org.iitbact.cc.services.ReportService;
 import org.iitbact.cc.services.TotalPatientsReportService;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,12 +57,12 @@ public class CommonReportsController {
 	public ResponseEntity getGeneratedReports(HttpServletResponse response,
 			@RequestBody CommonReportCriteria commonReportCriteria) {
 
-		try {
-		
 		CovidControlErpError error = null;
+		try {
+
 			System.out.println("CommonReportCriteria Request start");
 			LOGGER.info("CommonReportCriteria Request start");
-			
+
 			String userId = validationService.verifyFirebaseIdToken(commonReportCriteria.getAuthToken());
 
 			Optional<File> file;
@@ -107,7 +96,7 @@ public class CommonReportsController {
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Disposition", "attachment; filename=" + fileName);
-			headers.add("Access-Control-Expose-Headers","*");
+			headers.add("Access-Control-Expose-Headers", "*");
 
 			FileInputStream in = new FileInputStream(file.get());
 
@@ -121,18 +110,18 @@ public class CommonReportsController {
 			e.printStackTrace();
 			System.out.println("FileNotFoundException =" + e.getMessage());
 			LOGGER.error("FileNotFoundException =" + e.getMessage());
-			error= new CovidControlException(100,"File Not Found Exception :"+e.getMessage()).getError();
-			
+			error = new CovidControlException(100, "File Not Found Exception :" + e.getMessage()).getError();
+
 		} catch (CovidControlException e) {
 			e.printStackTrace();
 			System.out.println("CovidControlException =" + e.getMessage());
 			LOGGER.error("CovidControlException =" + e.getMessage());
-			error= new CovidControlException(100,"Covid Control Exception :"+e.getMessage()).getError();
+			error = new CovidControlException(100, "Covid Control Exception :" + e.getMessage()).getError();
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.out.println("IOException =" + e.getMessage());
 			LOGGER.error("IOException =" + e.getMessage());
-			error= new CovidControlException(100,"IOException :"+e.getMessage()).getError();
+			error = new CovidControlException(100, "IOException :" + e.getMessage()).getError();
 		}
 		return ResponseEntity.ok().body(error);
 	}
