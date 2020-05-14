@@ -27,13 +27,14 @@ ALTER TABLE `admin_users`
     alter table facility_mapping
     add column covid_facility_type varchar(15);
 
+    ALTER TABLE facility_mapping
+    ADD CONSTRAINT unique_source_mapped_covid_facility_type UNIQUE (source_facility, mapped_facility, covid_facility_type);
+
     insert ignore facility_mapping (source_facility, mapped_facility, covid_facility_type)
     select distinct source_facility, mapped_facility,
                 IF(severity = "MILD", "CCC",
                    IF(severity = "MODERATE", "DCHC",
                       IF(severity = "SEVERE", "DCH",
-                         NULL))) as covid_facility_type from facility_mapping inner join wards;
-
-    delete from facility_mapping where covid_facility_type is NULL;
+                         NULL))) as covid_facility_type from facility_mapping inner join wards on facility_mapping.mapped_facility = wards.facility_id;
                                                                                                                                                                                                    on facility_mapping.mapped_facility = wards.facility_id;
 
