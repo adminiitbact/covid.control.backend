@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -19,6 +18,7 @@ import org.iitbact.cc.constants.Constants;
 import org.iitbact.cc.constants.LinkingStatus;
 import org.iitbact.cc.dto.AvailabilityStatus;
 import org.iitbact.cc.dto.FacilityDto;
+import org.iitbact.cc.dto.FacilityLinkWrapperDto;
 import org.iitbact.cc.entities.AdminUser;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.entities.FacilityLink;
@@ -125,15 +125,40 @@ public class FacilityServices {
 		return true;
 	}
 
-	public List<FacilityDto> getLinkedFacilities(int facilityId) throws CovidControlException {
+	public FacilityLinkWrapperDto getLinkedFacilities(int facilityId) throws CovidControlException {
 		log.info("Get Linked Facilities - facility id {}", facilityId);
 
 		Facility facility = facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
 
-		return fetchAvailabilityStatusConvertToDto(facilityLinkRepository.getAllBySourceFacilityId(facilityId)
+		String DCH = "DCH";
+		String DCHC = "DCHC";
+		String CCC = "CCC";
+
+		String SEVERE = "SEVERE";
+		String MODERATE = "MODERATE";
+		String MILD = "MILD";
+
+		List<FacilityDto> DCHFacilities = fetchAvailabilityStatusConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, DCH)
 				.stream()
 				.map(FacilityLink::getMappedFacilty)
-				.collect(Collectors.toList()));
+				.collect(Collectors.toList()), SEVERE);
+
+		List<FacilityDto> DCHCFacilities = fetchAvailabilityStatusConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, DCHC)
+				.stream()
+				.map(FacilityLink::getMappedFacilty)
+				.collect(Collectors.toList()), MODERATE);
+
+		List<FacilityDto> CCCFacilities = fetchAvailabilityStatusConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, CCC)
+				.stream()
+				.map(FacilityLink::getMappedFacilty)
+				.collect(Collectors.toList()), MILD);
+
+		return FacilityLinkWrapperDto
+				.builder()
+				.DCHFacilities(DCHFacilities)
+				.DCHCFacilities(DCHCFacilities)
+				.CCCFacilities(CCCFacilities)
+				.build();
 	}
 
 	private void addBidirectionalLink(Integer facilityId1, Integer facilityId2) {
@@ -156,19 +181,30 @@ public class FacilityServices {
 
 	private void addSingleLink(Integer sourceFacilityId, Integer mappedFacilityId) {
 		log.info("Adding link for {} - {}", sourceFacilityId, mappedFacilityId);
-		Boolean linkAlreadyExists = facilityLinkRepository.existsBySourceFacilityIdAndMappedFacilityId(sourceFacilityId,
-				mappedFacilityId);
-		if (!linkAlreadyExists) {
-			if (facilityRepository.existsById(mappedFacilityId)) {
-				FacilityLink facilityLink = FacilityLink.builder().sourceFacilityId(sourceFacilityId)
-						.mappedFacilityId(mappedFacilityId).build();
-				facilityLinkRepository.save(facilityLink);
-				log.info("Link created successfully for {} and {}", sourceFacilityId, mappedFacilityId);
-			} else {
-				log.error("No facility exists by id {}. Invalid link.", mappedFacilityId);
+		List<String> typesOfWards = wardRepository.getTypesOfWards(mappedFacilityId);
+		for(String typeOfWard : typesOfWards) {
+			String covidStatus = covertSeverityToCovidStatus(typeOfWard);
+			if(covidStatus != null) {
+				Boolean linkAlreadyExists = facilityLinkRepository.existsBySourceFacilityIdAndMappedFacilityIdAndCovidFacilityType(sourceFacilityId,
+						mappedFacilityId, covidStatus);
+				if (!linkAlreadyExists) {
+					if (facilityRepository.existsById(mappedFacilityId)) {
+						FacilityLink facilityLink = FacilityLink.builder().sourceFacilityId(sourceFacilityId)
+								.mappedFacilityId(mappedFacilityId)
+								.covidFacilityType(covidStatus)
+								.build();
+						facilityLinkRepository.save(facilityLink);
+						log.info("Link created successfully for {} and {} with covid status {}", sourceFacilityId, mappedFacilityId, covidStatus);
+					} else {
+						log.error("No facility exists by id {}. Invalid link.", mappedFacilityId);
+					}
+				} else {
+					log.error("Link already exists between {} and {} with covid status {}", sourceFacilityId, mappedFacilityId, covidStatus);
+				}
 			}
-		} else {
-			log.error("Link already exists between {} and {}", sourceFacilityId, mappedFacilityId);
+			else {
+				log.error("No mapping exists for severity {}", typeOfWard);
+			}
 		}
 	}
 
@@ -178,11 +214,13 @@ public class FacilityServices {
 	}
 
 	private void removeSingleLink(Integer sourceFacilityId, Integer mappedFacilityId) {
-		Optional<FacilityLink> facilityLink = facilityLinkRepository
-				.getBySourceFacilityIdAndMappedFacilityId(sourceFacilityId, mappedFacilityId);
-		if (facilityLink.isPresent()) {
-			facilityLinkRepository.delete(facilityLink.get());
-			log.info("Link deleted successfully for {} and {}", sourceFacilityId, mappedFacilityId);
+		List<FacilityLink> facilityLinks = facilityLinkRepository
+				.findAllBySourceFacilityIdAndMappedFacilityId(sourceFacilityId, mappedFacilityId);
+		if (!facilityLinks.isEmpty()) {
+			for(FacilityLink facilityLink : facilityLinks) {
+				facilityLinkRepository.delete(facilityLink);
+				log.info("Link deleted successfully for {} and {} with covid status {}", sourceFacilityId, mappedFacilityId, facilityLink.getCovidFacilityType());
+			}
 		} else {
 			log.error("Link does not exist between {} and {}", sourceFacilityId, mappedFacilityId);
 		}
@@ -258,7 +296,12 @@ public class FacilityServices {
 		List<Integer> facilityIds = facilities.stream().map(Facility::getFacilityId).collect(Collectors.toList());
 		List<AvailabilityStatus> availabilityStatusList = wardRepository.getAvailabilityStatus(facilityIds);
 		return merge(facilities, availabilityStatusList);
+	}
 
+	private List<FacilityDto> fetchAvailabilityStatusConvertToDto(List<Facility> facilities, String covidStatus){
+		List<Integer> facilityIds = facilities.stream().map(Facility::getFacilityId).collect(Collectors.toList());
+		List<AvailabilityStatus> availabilityStatusList = wardRepository.getAvailabilityStatus(facilityIds, covidStatus);
+		return merge(facilities, availabilityStatusList);
 	}
 
 	private List<FacilityDto> merge(List<Facility> facilities, List<AvailabilityStatus> availabilityStatusList) {
@@ -279,5 +322,16 @@ public class FacilityServices {
 			facilityDtos.add(facilityDto);
 		}
 		return facilityDtos;
+	}
+
+	private String covertSeverityToCovidStatus(String severity){
+		if("MILD".equals(severity)){
+			return "CCC";
+		} else if ("MODERATE".equals(severity)){
+			return "DCHC";
+		} else if ("SEVERE".equals(severity)){
+			return "DCH";
+		}
+		return null;
 	}
 }

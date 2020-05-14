@@ -23,3 +23,17 @@ ALTER TABLE `admin_users`
 
     alter table facilities
     add column operating_status tinyint not null default false;
+
+    alter table facility_mapping
+    add column covid_facility_type varchar(15);
+
+    insert ignore facility_mapping (source_facility, mapped_facility, covid_facility_type)
+    select distinct source_facility, mapped_facility,
+                IF(severity = "MILD", "CCC",
+                   IF(severity = "MODERATE", "DCHC",
+                      IF(severity = "SEVERE", "DCH",
+                         NULL))) as covid_facility_type from facility_mapping inner join wards;
+
+    delete from facility_mapping where covid_facility_type is NULL;
+                                                                                                                                                                                                   on facility_mapping.mapped_facility = wards.facility_id;
+

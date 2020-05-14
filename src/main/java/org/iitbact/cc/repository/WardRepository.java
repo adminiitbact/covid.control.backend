@@ -22,4 +22,18 @@ public interface WardRepository extends JpaRepository<Ward, Integer>,JpaSpecific
             "GROUP BY w.facilityId,w.severity")
     List<AvailabilityStatus> getAvailabilityStatus(@Param("facilities") List<Integer> facilities);
 
+    @Query(value = "SELECT new org.iitbact.cc.dto.AvailabilityStatus(w.facilityId," +
+            " w.severity," +
+            "SUM(w.totalBeds), " +
+            "SUM(w.availableBeds), " +
+            "SUM(w.ventilators), " +
+            "SUM(w.ventilatorsOccupied)) " +
+            "FROM Ward w " +
+            "WHERE w.facilityId in ?1 and w.severity = ?2 " +
+            "GROUP BY w.facilityId,w.severity")
+    List<AvailabilityStatus> getAvailabilityStatus(@Param("facilities") List<Integer> facilities, String covidStatus);
+
+    @Query(value = "SELECT DISTINCT w.severity FROM Ward w where w.facilityId = ?1")
+    List<String> getTypesOfWards(@Param("facility_id") Integer facilityId);
+
 }
