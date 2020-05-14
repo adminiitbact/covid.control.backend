@@ -10,17 +10,18 @@ public interface FacilityLinkRepository extends JpaRepository<FacilityLink, Inte
     /**
      * Checks if a link exists between two facilities
      */
-    Boolean existsBySourceFacilityIdAndMappedFacilityId(Integer sourceFacilityId, Integer mappedFacilityId);
+    Boolean existsBySourceFacilityIdAndMappedFacilityIdAndCovidFacilityType(Integer sourceFacilityId, Integer mappedFacilityId, String covidFacilityType);
 
     /**
      * Returns a link between two facilities else return Optional.empty()
      */
-    Optional<FacilityLink> getBySourceFacilityIdAndMappedFacilityId(Integer sourceFacilityId, Integer mappedFacilityId);
+    List<FacilityLink> findAllBySourceFacilityIdAndMappedFacilityId(Integer sourceFacilityId, Integer mappedFacilityId);
 
     /**
      * Returns all the facility links associated with the source facility
      */
-    List<FacilityLink> getAllBySourceFacilityId(Integer sourceFacilityId);
+    List<FacilityLink> getAllBySourceFacilityIdAndCovidFacilityType(Integer sourceFacilityId, String covidFacilityType);
+
 
     /**
      * Checks if any entry with the sourceFacility exists or not

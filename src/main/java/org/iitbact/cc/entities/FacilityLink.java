@@ -36,6 +36,9 @@ public class FacilityLink implements Serializable {
     @Column(name = "mapped_facility")
     private Integer mappedFacilityId;
 
+    @Column(name = "covid_facility_type")
+    private String covidFacilityType;
+
     @JoinColumn(name="mapped_facility", insertable = false, updatable = false)
     @ManyToOne(targetEntity = Facility.class)
     private Facility mappedFacilty;
