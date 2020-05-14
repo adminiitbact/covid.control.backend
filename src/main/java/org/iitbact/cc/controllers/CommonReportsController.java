@@ -13,10 +13,16 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletResponse;
 
 import org.iitbact.cc.constants.ReportNames;
+
+import org.iitbact.cc.exceptions.CovidControlErpError;
+import org.iitbact.cc.exceptions.CovidControlErrorCode;
+import org.iitbact.cc.exceptions.CovidControlErrorMsg;
+
 import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.requests.CommonReportCriteria;
 import org.iitbact.cc.services.ApiValidationService;
 import org.iitbact.cc.services.PatientDischargeReportService;
+
 import org.iitbact.cc.services.ReportService;
 import org.iitbact.cc.services.TotalPatientsReportService;
 import org.springframework.core.io.InputStreamResource;
@@ -25,6 +31,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +47,8 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/api/common/reports")
 public class CommonReportsController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommonReportsController.class);
 
 	private final ApiValidationService validationService;
 	private final PatientDischargeReportService patientDischargeReportService;
@@ -55,7 +67,13 @@ public class CommonReportsController {
 	@ApiOperation(value = "API request to export common report")
 	public ResponseEntity getGeneratedReports(HttpServletResponse response,
 			@RequestBody CommonReportCriteria commonReportCriteria) {
+
 		try {
+		
+		CovidControlErpError error = null;
+			System.out.println("CommonReportCriteria Request start");
+			LOGGER.info("CommonReportCriteria Request start");
+			
 			String userId = validationService.verifyFirebaseIdToken(commonReportCriteria.getAuthToken());
 
 			Optional<File> file;
@@ -86,31 +104,37 @@ public class CommonReportsController {
 			default:
 				throw new IllegalArgumentException("Invalid report name");
 			}
-//				response.setContentType("text/csv");
-//				response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
-//				response.setContentLength((int) file.get().length());
-//
-//				FileCopyUtils.copy(new FileInputStream(file.get()), response.getOutputStream());
 
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Content-Disposition", "attachment; filename=" + fileName);
 			headers.add("Access-Control-Expose-Headers","*");
 
 			FileInputStream in = new FileInputStream(file.get());
+
+			System.out.println("CommonReportCriteria Request end");
+			LOGGER.info("CommonReportCriteria Request end");
+
 			return ResponseEntity.ok().headers(headers).contentLength((int) file.get().length())
 					.contentType(MediaType.parseMediaType("text/csv")).header("filename", fileName)
 					.body(new InputStreamResource(in));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("FileNotFoundException =" + e.getMessage());
+			LOGGER.error("FileNotFoundException =" + e.getMessage());
+			error= new CovidControlException(100,"File Not Found Exception :"+e.getMessage()).getError();
+			
 		} catch (CovidControlException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("CovidControlException =" + e.getMessage());
+			LOGGER.error("CovidControlException =" + e.getMessage());
+			error= new CovidControlException(100,"Covid Control Exception :"+e.getMessage()).getError();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("IOException =" + e.getMessage());
+			LOGGER.error("IOException =" + e.getMessage());
+			error= new CovidControlException(100,"IOException :"+e.getMessage()).getError();
 		}
-		return null;
+		return ResponseEntity.ok().body(error);
 	}
 
 	public File writeCsvFile(List<String[]> data, String filename) throws IOException {
