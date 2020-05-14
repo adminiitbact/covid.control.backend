@@ -74,7 +74,7 @@ public class FacilityServices {
 		if(null != facility.getFacilityId()){
 			throw new CovidControlException(new CovidControlErpError(CovidControlErrorCode.FACILITY_ID_SHOULD_BE_NULL, CovidControlErrorMsg.FACILITY_ID_SHOULD_BE_NULL));
 		}
-		facility.getFacilityContact().setFacility(facility);
+		setAllExtraFields(facility);
 		facilityRepository.save(facility);
 
 		log.info("Facility created successfully with id {}", request.getFacilityProfile().getFacilityId());
@@ -90,10 +90,27 @@ public class FacilityServices {
 		Facility facility = facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException);
 		facility.copy(facilityRequest.getFacilityProfile(),user);
 
-		facility.getFacilityContact().setFacility(facility);
 		facilityRepository.save(facility);
 		log.info("Facility {} updated successfully", facilityId);
 		return fetchAvailabilityStatusConvertToDto(facility);
+	}
+
+	private void setAllExtraFields(Facility facility){
+		if(facility.getFacilityContact()!=null) {
+			facility.getFacilityContact().setFacility(facility);
+		}
+		if (facility.getFacilityAssets() != null) {
+			facility.getFacilityAssets().setFacility(facility);
+		}
+		if (facility.getFacilityChecklist() != null) {
+			facility.getFacilityChecklist().setFacility(facility);
+		}
+		if (facility.getFacilityMedstaff() != null) {
+			facility.getFacilityMedstaff().setFacility(facility);
+		}
+		if (facility.getFacilityInventory() != null) {
+			facility.getFacilityInventory().setFacility(facility);
+		}
 	}
 
 	public FacilityDto fetchFacilityData(int facilityId) throws CovidControlException {
