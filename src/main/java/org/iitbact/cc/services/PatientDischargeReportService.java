@@ -15,8 +15,6 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.iitbact.cc.constants.ReportNames;
 import org.iitbact.cc.dto.PatientDischargedDto;
 import org.iitbact.cc.entities.AdminUser;
@@ -26,10 +24,14 @@ import org.iitbact.cc.entities.PatientDischarged;
 import org.iitbact.cc.entities.PatientHistory;
 import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.requests.CommonReportCriteria;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PatientDischargeReportService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PatientDischargeReportService.class);
 
 	@PersistenceContext
 	private EntityManager em;
@@ -42,6 +44,10 @@ public class PatientDischargeReportService {
 
 	public List<String[]> fetchDailyPatientDischargeList(String uid, String reportName,
 			CommonReportCriteria commonReportCriteria) throws CovidControlException {
+
+		System.out.println("fetchDailyPatientDischargeList  start");
+		LOGGER.debug("fetchDailyPatientDischargeList start");
+
 		AdminUser user = userService.profile(uid);
 
 		List<String[]> entries = new ArrayList<>();
@@ -137,6 +143,10 @@ public class PatientDischargeReportService {
 					dateformater_Java.format(p.getDateOfAdmission()),
 					dateformater_Java.format(p.getDateOfDischarged()) });
 		}
+
+		System.out.println("fetchDailyPatientDischargeList  end");
+		LOGGER.debug("fetchDailyPatientDischargeList end");
+
 		return entries;
 	}
 }
