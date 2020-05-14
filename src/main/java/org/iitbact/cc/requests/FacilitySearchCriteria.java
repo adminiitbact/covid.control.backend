@@ -13,6 +13,7 @@ import lombok.Data;
 public class FacilitySearchCriteria extends BaseRequest {
 	private String name;
 	private Boolean hasLinks;
+	private Boolean operatingStatus;
 	private List<String> covidFacilityType;
 	private List<String> areas;
 	private List<String> jurisdictions;
