@@ -2,7 +2,9 @@ package org.iitbact.cc.controllers;
 
 import org.iitbact.cc.beans.ResponseBean;
 import org.iitbact.cc.dto.PatientDto;
+import org.iitbact.cc.dto.PatientStatsAgeDto;
 import org.iitbact.cc.dto.PatientStatsDto;
+import org.iitbact.cc.dto.PatientStatsGenderDto;
 import org.iitbact.cc.helper.ControllerWrapper;
 import org.iitbact.cc.repository.PatientLiveStatusRepository;
 import org.iitbact.cc.requests.BaseRequest;
@@ -39,9 +41,21 @@ public class PatientController {
     }
 
 	@PostMapping(path = "/patients/stats/{facilityId}")
-	@ApiOperation(response = PatientStatsDto.class,responseContainer = "List", value = "API to get count of patients at a particular facilityId")
+	@ApiOperation(response = PatientStatsDto.class,responseContainer = "List", value = "API to get count of patients for a particular {facilityId}")
 	public ResponseBean<ListResponse<PatientStatsDto>> getPatientStats(@PathVariable int facilityId, @RequestBody BaseRequest request ){
 		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientLiveStatusServices.getPatientStats(facilityId));
+	}
+
+	@PostMapping(path = "/patients/stats/gender/{facilityId}")
+	@ApiOperation(response = PatientStatsGenderDto.class,responseContainer = "List", value = "API to get count of patients based on gender for a particular {facilityId}")
+	public ResponseBean<ListResponse<PatientStatsGenderDto>> getPatientStatsByGender(@PathVariable int facilityId, @RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientLiveStatusServices.getPatientStatsByGender(facilityId));
+	}
+
+	@PostMapping(path = "/patients/stats/age/{facilityId}")
+	@ApiOperation(response = PatientStatsAgeDto.class,responseContainer = "List", value = "API to get count of patients based on age at a particular {facilityId}")
+	public ResponseBean<ListResponse<PatientStatsAgeDto>> getPatientStatsByAge(@PathVariable int facilityId, @RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientLiveStatusServices.getPatientStatsByAge(facilityId));
 	}
     
 }
