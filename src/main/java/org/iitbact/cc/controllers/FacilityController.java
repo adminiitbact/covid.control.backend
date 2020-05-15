@@ -2,7 +2,6 @@ package org.iitbact.cc.controllers;
 
 import org.iitbact.cc.beans.ResponseBean;
 import org.iitbact.cc.dto.FacilityDto;
-import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.helper.ControllerWrapper;
 import org.iitbact.cc.requests.BaseRequest;
 import org.iitbact.cc.requests.FacilityRequest;
@@ -11,7 +10,7 @@ import org.iitbact.cc.requests.LinkFacilitiesRequest;
 import org.iitbact.cc.response.BooleanResponse;
 import org.iitbact.cc.response.FacilityLinkResponse;
 import org.iitbact.cc.response.FacilityProfile;
-import org.iitbact.cc.response.ListResponse;
+import org.iitbact.cc.response.ListResponseType2;
 import org.iitbact.cc.services.FacilityServices;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,10 +67,10 @@ public class FacilityController {
         return controllerWrapper.wrap(FacilityLinkResponse::new, request, (uid) -> facilityServices.getLinkedFacilities(facilityId));
     }
     
-    @PostMapping(path = "/facilities/{pageNo}")
+    @PostMapping(path = "/facilities/{offset}/{limit}")
     @ApiOperation(response = FacilityDto.class,responseContainer = "List", value = "API to fetch all facilities wrt filters")
-    public ResponseBean<ListResponse<FacilityDto>> getFacilities(@PathVariable int pageNo, @RequestBody FacilitySearchCriteria request){
-        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getFacilities(pageNo,uid, request));
+    public ResponseBean<ListResponseType2<FacilityDto>> getFacilities(@PathVariable int offset,@PathVariable int limit, @RequestBody FacilitySearchCriteria request){
+        return controllerWrapper.wrap(ListResponseType2::new, request, (uid) -> facilityServices.getFacilities(offset,limit,uid, request));
     }
     
 }

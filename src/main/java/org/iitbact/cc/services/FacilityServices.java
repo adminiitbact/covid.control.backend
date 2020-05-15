@@ -14,7 +14,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import org.iitbact.cc.constants.Constants;
+import org.iitbact.cc.beans.PageInfo;
 import org.iitbact.cc.constants.LinkingStatus;
 import org.iitbact.cc.dto.AvailabilityStatus;
 import org.iitbact.cc.dto.FacilityDto;
@@ -244,14 +244,18 @@ public class FacilityServices {
 		}
 	}
 
-	public List<FacilityDto> getFacilities(int pageNo, String uid, FacilitySearchCriteria searchCriteria) throws CovidControlException {
+	public org.iitbact.cc.beans.Page<FacilityDto> getFacilities(int offset, int limit, String uid, FacilitySearchCriteria searchCriteria) throws CovidControlException {
 		AdminUser user=userServices.profile(uid);
-		Pageable pageRequest = PageRequest.of(pageNo - 1, Constants.PAGE_SIZE);
+		Pageable pageRequest = PageRequest.of(offset, limit);
 
 		Page<Facility> page = facilityRepository.findAll(FacilitySearchSpecificaton.findByCriteria(searchCriteria,user.getRegion()),
 				pageRequest);
-
-		return fetchAvailabilityStatusAndLinkCountConvertToDto(page.toList());
+		List<FacilityDto> list=fetchAvailabilityStatusAndLinkCountConvertToDto(page.toList());
+		
+		org.iitbact.cc.beans.Page<FacilityDto> slice=new org.iitbact.cc.beans.Page<FacilityDto>();
+		slice.setElements(list);
+		slice.setMeta(new PageInfo(limit, offset, page.getTotalElements()));
+		return slice;
 	}
 
 	private static class FacilitySearchSpecificaton {
