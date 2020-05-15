@@ -3,8 +3,10 @@ package org.iitbact.cc.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.iitbact.cc.dto.LinkCount;
 import org.iitbact.cc.entities.FacilityLink;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface FacilityLinkRepository extends JpaRepository<FacilityLink, Integer> {
     /**
@@ -27,4 +29,21 @@ public interface FacilityLinkRepository extends JpaRepository<FacilityLink, Inte
      * Checks if any entry with the sourceFacility exists or not
      */
     Boolean existsBySourceFacilityId(Integer sourceFacilityId);
+
+    @Query(value = "SELECT new org.iitbact.cc.dto.LinkCount(f.sourceFacilityId," +
+            "SUM( CASE WHEN (f.covidFacilityType = 'DCH') THEN 1 else 0 END), " +
+            "SUM( CASE WHEN (f.covidFacilityType = 'DCHC') THEN 1 else 0 END), " +
+            "SUM( CASE WHEN (f.covidFacilityType = 'CCC') THEN 1 else 0 END)) " +
+            "FROM FacilityLink f " +
+            "WHERE f.sourceFacilityId = ?1")
+    LinkCount findLinkCount(Integer sourceFacility);
+
+    @Query(value = "SELECT new org.iitbact.cc.dto.LinkCount(f.sourceFacilityId," +
+            "SUM( CASE WHEN (f.covidFacilityType = 'DCH') THEN 1 else 0 END), " +
+            "SUM( CASE WHEN (f.covidFacilityType = 'DCHC') THEN 1 else 0 END), " +
+            "SUM( CASE WHEN (f.covidFacilityType = 'CCC') THEN 1 else 0 END)) " +
+            "FROM FacilityLink f " +
+            "WHERE f.sourceFacilityId in ?1 " +
+            "GROUP BY f.sourceFacilityId")
+    List<LinkCount> findLinkCount(List<Integer> sourceFacilities);
 }

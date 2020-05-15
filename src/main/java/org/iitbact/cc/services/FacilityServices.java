@@ -19,6 +19,7 @@ import org.iitbact.cc.constants.LinkingStatus;
 import org.iitbact.cc.dto.AvailabilityStatus;
 import org.iitbact.cc.dto.FacilityDto;
 import org.iitbact.cc.dto.FacilityLinkWrapperDto;
+import org.iitbact.cc.dto.LinkCount;
 import org.iitbact.cc.entities.AdminUser;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.entities.FacilityLink;
@@ -92,7 +93,7 @@ public class FacilityServices {
 
 		facilityRepository.save(facility);
 		log.info("Facility {} updated successfully", facilityId);
-		return fetchAvailabilityStatusConvertToDto(facility);
+		return fetchAvailabilityStatusAndLinkCountConvertToDto(facility);
 	}
 
 	private void setAllExtraFields(Facility facility){
@@ -116,7 +117,7 @@ public class FacilityServices {
 	public FacilityDto fetchFacilityData(int facilityId) throws CovidControlException {
 		log.info("Fetch Facility Data request {}", facilityId);
 
-		return fetchAvailabilityStatusConvertToDto(facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException));
+		return fetchAvailabilityStatusAndLinkCountConvertToDto(facilityRepository.findById(facilityId).orElseThrow(facilityDoesNotExistException));
 	}
 
 	public Boolean linkFacilities(int facilityId, LinkFacilitiesRequest linkFacilitiesRequest)
@@ -155,17 +156,17 @@ public class FacilityServices {
 		String MODERATE = "MODERATE";
 		String MILD = "MILD";
 
-		List<FacilityDto> DCHFacilities = fetchAvailabilityStatusConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, DCH)
+		List<FacilityDto> DCHFacilities = fetchAvailabilityStatusAndLinkCountConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, DCH)
 				.stream()
 				.map(FacilityLink::getMappedFacilty)
 				.collect(Collectors.toList()), SEVERE);
 
-		List<FacilityDto> DCHCFacilities = fetchAvailabilityStatusConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, DCHC)
+		List<FacilityDto> DCHCFacilities = fetchAvailabilityStatusAndLinkCountConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, DCHC)
 				.stream()
 				.map(FacilityLink::getMappedFacilty)
 				.collect(Collectors.toList()), MODERATE);
 
-		List<FacilityDto> CCCFacilities = fetchAvailabilityStatusConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, CCC)
+		List<FacilityDto> CCCFacilities = fetchAvailabilityStatusAndLinkCountConvertToDto(facilityLinkRepository.getAllBySourceFacilityIdAndCovidFacilityType(facilityId, CCC)
 				.stream()
 				.map(FacilityLink::getMappedFacilty)
 				.collect(Collectors.toList()), MILD);
@@ -250,7 +251,7 @@ public class FacilityServices {
 		Page<Facility> page = facilityRepository.findAll(FacilitySearchSpecificaton.findByCriteria(searchCriteria,user.getRegion()),
 				pageRequest);
 
-		return fetchAvailabilityStatusConvertToDto(page.toList());
+		return fetchAvailabilityStatusAndLinkCountConvertToDto(page.toList());
 	}
 
 	private static class FacilitySearchSpecificaton {
@@ -304,41 +305,47 @@ public class FacilityServices {
 		return FacilityDto.createFromFacility(facility);
 	}
 
-	private FacilityDto fetchAvailabilityStatusConvertToDto(Facility facility){
+	private FacilityDto fetchAvailabilityStatusAndLinkCountConvertToDto(Facility facility){
 		List<AvailabilityStatus> availabilityStatusList = wardRepository.getAvailabilityStatus(Collections.singletonList(facility.getFacilityId()));
-		return FacilityDto.createFromFacility(facility, availabilityStatusList);
+		LinkCount linkCount = facilityLinkRepository.findLinkCount(facility.getFacilityId());
+		return FacilityDto.createFromFacility(facility, availabilityStatusList, linkCount);
 	}
 
-	private List<FacilityDto> toFacilityDto(List<Facility> facilities){
-		return facilities.stream().map(FacilityDto::createFromFacility).collect(Collectors.toList());
-	}
 
-	private List<FacilityDto> fetchAvailabilityStatusConvertToDto(List<Facility> facilities){
+	private List<FacilityDto> fetchAvailabilityStatusAndLinkCountConvertToDto(List<Facility> facilities){
 		List<Integer> facilityIds = facilities.stream().map(Facility::getFacilityId).collect(Collectors.toList());
 		List<AvailabilityStatus> availabilityStatusList = wardRepository.getAvailabilityStatus(facilityIds);
-		return merge(facilities, availabilityStatusList);
+		List<LinkCount> linkCounts = facilityLinkRepository.findLinkCount(facilityIds);
+		return merge(facilities, availabilityStatusList, linkCounts);
 	}
 
-	private List<FacilityDto> fetchAvailabilityStatusConvertToDto(List<Facility> facilities, String covidStatus){
+	private List<FacilityDto> fetchAvailabilityStatusAndLinkCountConvertToDto(List<Facility> facilities, String covidStatus){
 		List<Integer> facilityIds = facilities.stream().map(Facility::getFacilityId).collect(Collectors.toList());
 		List<AvailabilityStatus> availabilityStatusList = wardRepository.getAvailabilityStatus(facilityIds, covidStatus);
-		return merge(facilities, availabilityStatusList);
+		List<LinkCount> linkCounts = facilityLinkRepository.findLinkCount(facilityIds);
+		return merge(facilities, availabilityStatusList, linkCounts);
 	}
 
-	private List<FacilityDto> merge(List<Facility> facilities, List<AvailabilityStatus> availabilityStatusList) {
+	private List<FacilityDto> merge(List<Facility> facilities, List<AvailabilityStatus> availabilityStatusList, List<LinkCount> linkCounts) {
 		Map<Integer, Facility> facilityMap = facilities.stream().collect(Collectors.toMap(Facility::getFacilityId, facility -> facility));
 		Map<Integer, List<AvailabilityStatus>> availabilityStatusMap = new HashMap<>();
+		Map<Integer, LinkCount> linkCountMap = new HashMap<>();
 		for (AvailabilityStatus availabilityStatus : availabilityStatusList){
 			availabilityStatusMap.computeIfAbsent(availabilityStatus.getFacilityId(), (id) -> new LinkedList<>())
 					.add(availabilityStatus);
 		}
+		for(LinkCount linkCount:linkCounts){
+			linkCountMap.put(linkCount.getFacilityId(), linkCount);
+		}
+
 		List<FacilityDto> facilityDtos = new LinkedList<>();
 		for(Map.Entry<Integer, Facility> facilityEntry: facilityMap.entrySet()){
 			Integer facilityId = facilityEntry.getKey();
 			Facility facility = facilityEntry.getValue();
 			List<AvailabilityStatus> availabilityStatus = availabilityStatusMap.getOrDefault(facilityId, Collections.emptyList());
+			LinkCount linkCount = linkCountMap.get(facilityId);
 
-			FacilityDto facilityDto = FacilityDto.createFromFacility(facility, availabilityStatus);
+			FacilityDto facilityDto = FacilityDto.createFromFacility(facility, availabilityStatus, linkCount);
 
 			facilityDtos.add(facilityDto);
 		}

@@ -35,6 +35,7 @@ public class FacilityDto {
     private String ulbWardName;
     private String ulbZoneName;
     private List<AvailabilityStatus> availabilityStatusList;
+    private LinkCount linkCount;
     private Boolean hasLinks;
     private Boolean operatingStatus;
     private FacilityContact facilityContact;
@@ -45,10 +46,10 @@ public class FacilityDto {
 
 
     public static FacilityDto createFromFacility(Facility facility){
-        return createFromFacility(facility, Collections.emptyList());
+        return createFromFacility(facility, Collections.emptyList(), null);
     }
 
-    public static FacilityDto createFromFacility(Facility facility, List<AvailabilityStatus> availabilityStatus){
+    public static FacilityDto createFromFacility(Facility facility, List<AvailabilityStatus> availabilityStatus, LinkCount linkCount){
         return FacilityDto.builder()
                 .address(facility.getAddress())
                 .agreementStatus(facility.getAgreementStatus())
@@ -68,6 +69,7 @@ public class FacilityDto {
                 .ulbWardName(facility.getUlbWardName())
                 .ulbZoneName(facility.getUlbZoneName())
                 .availabilityStatusList(availabilityStatus)
+                .linkCount(linkCount!=null && linkCount.getFacilityId()!=null ? linkCount : new LinkCount(facility.getFacilityId(), 0L, 0L, 0L))
                 .hasLinks(facility.getHasLinks())
                 .operatingStatus(facility.getOperatingStatus())
                 .facilityContact(facility.getFacilityContact())
