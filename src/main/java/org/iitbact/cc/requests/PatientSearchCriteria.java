@@ -13,7 +13,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class PaitentSearchCriteria extends BaseRequest {
+public class PatientSearchCriteria extends BaseRequest {
 	private String name;
 	
 	private List<Integer> facilityIds;

@@ -4,7 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.iitbact.cc.entities.Facility;
+import org.iitbact.cc.entities.FacilityAssets;
+import org.iitbact.cc.entities.FacilityChecklist;
 import org.iitbact.cc.entities.FacilityContact;
+import org.iitbact.cc.entities.FacilityInventory;
+import org.iitbact.cc.entities.FacilityMedstaff;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,16 +34,22 @@ public class FacilityDto {
     private String telephone;
     private String ulbWardName;
     private String ulbZoneName;
-    private FacilityContact facilityContact;
     private List<AvailabilityStatus> availabilityStatusList;
+    private LinkCount linkCount;
     private Boolean hasLinks;
+    private Boolean operatingStatus;
+    private FacilityContact facilityContact;
+    private FacilityAssets facilityAssets;
+    private FacilityChecklist facilityChecklist;
+    private FacilityInventory facilityInventory;
+    private FacilityMedstaff facilityMedstaff;
 
 
     public static FacilityDto createFromFacility(Facility facility){
-        return createFromFacility(facility, Collections.emptyList());
+        return createFromFacility(facility, Collections.emptyList(), null);
     }
 
-    public static FacilityDto createFromFacility(Facility facility, List<AvailabilityStatus> availabilityStatus){
+    public static FacilityDto createFromFacility(Facility facility, List<AvailabilityStatus> availabilityStatus, LinkCount linkCount){
         return FacilityDto.builder()
                 .address(facility.getAddress())
                 .agreementStatus(facility.getAgreementStatus())
@@ -58,9 +68,15 @@ public class FacilityDto {
                 .telephone(facility.getTelephone())
                 .ulbWardName(facility.getUlbWardName())
                 .ulbZoneName(facility.getUlbZoneName())
-                .facilityContact(facility.getFacilityContact())
                 .availabilityStatusList(availabilityStatus)
+                .linkCount(linkCount!=null && linkCount.getFacilityId()!=null ? linkCount : new LinkCount(facility.getFacilityId(), 0L, 0L, 0L))
                 .hasLinks(facility.getHasLinks())
+                .operatingStatus(facility.getOperatingStatus())
+                .facilityContact(facility.getFacilityContact())
+                .facilityAssets(facility.getFacilityAssets())
+                .facilityChecklist(facility.getFacilityChecklist())
+                .facilityInventory(facility.getFacilityInventory())
+                .facilityMedstaff(facility.getFacilityMedstaff())
                 .build();
     }
 

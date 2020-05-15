@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -22,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
 /**
  * The persistent class for the facilities database table.
@@ -57,7 +57,6 @@ public class Facility implements Serializable {
 	@Column(name = "facility_status")
 	private String facilityStatus = "Unassigned";
 
-
 	@Column(name = "government_hospital")
 	private byte governmentHospital;
 
@@ -90,9 +89,33 @@ public class Facility implements Serializable {
 	@Column(name = "has_links")
 	private Boolean hasLinks;
 
+	@Column(name = "operating_status")
+	private Boolean operatingStatus;
+
 	// bi-directional one-to-one association to FacilityContact
+	@Nullable
 	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	private FacilityContact facilityContact;
+
+	// bi-directional one-to-one association to FacilityContact
+	@Nullable
+	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private FacilityAssets facilityAssets;
+
+	// bi-directional one-to-one association to FacilityContact
+	@Nullable
+	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private FacilityChecklist facilityChecklist;
+
+	// bi-directional one-to-one association to FacilityContact
+	@Nullable
+	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private FacilityInventory facilityInventory;
+
+	// bi-directional one-to-one association to FacilityContact
+	@Nullable
+	@OneToOne(mappedBy = "facility", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private FacilityMedstaff facilityMedstaff;
 
 	@PrePersist
 	@PreUpdate
@@ -109,6 +132,9 @@ public class Facility implements Serializable {
 	    // This will be null only for the first time, will be updated only by through automatic logic
 	    if(hasLinks == null){
 	    	hasLinks = false;
+		}
+	    if(operatingStatus == null){
+	    	operatingStatus = false;
 		}
 
     }
@@ -130,9 +156,34 @@ public class Facility implements Serializable {
 		this.telephone = that.telephone;
 		this.ulbWardName = that.ulbWardName;
 		this.ulbZoneName = that.ulbZoneName;
+
 		this.facilityContact = that.facilityContact;
-		this.facilityContact.setFacilityId(this.facilityId);
+		if(this.facilityContact!=null) {
+			this.facilityContact.setFacilityId(facilityId);
+		}
+
+		this.facilityAssets = that.facilityAssets;
+		if(this.facilityAssets != null) {
+			this.facilityAssets.setFacilityId(facilityId);
+		}
+
+		this.facilityChecklist = that.facilityChecklist;
+		if(this.facilityChecklist != null) {
+			this.facilityChecklist.setFacilityId(facilityId);
+		}
+
+		this.facilityInventory = that.facilityInventory;
+		if(this.facilityInventory != null) {
+			this.facilityInventory.setFacilityId(facilityId);
+		}
+
+		this.facilityMedstaff = that.facilityMedstaff;
+		if(this.facilityMedstaff != null) {
+			this.facilityMedstaff.setFacilityId(facilityId);
+		}
+
 		this.region = user.getRegion();
+		this.operatingStatus = that.operatingStatus;
 		// hasLinks will not be updated through the front-end ever.
 
 	}

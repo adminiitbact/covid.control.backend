@@ -30,14 +30,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-public class PaitentServices {
+public class PatientServices {
 
 	@PersistenceContext
 	private EntityManager em;
 
 	private final UserServices userServices;
 
-	public PaitentServices(UserServices userServices) {
+	public PatientServices(UserServices userServices) {
 		this.userServices = userServices;
 	}
 
@@ -81,6 +81,7 @@ public class PaitentServices {
 		if (searchCriteria.getFacilityIds() != null && !searchCriteria.getFacilityIds().isEmpty()) {
 			predicates.add(join2.get("facilityId").in(searchCriteria.getFacilityIds()));
 		}
+
 		if (searchCriteria.getCovidFacilityType() != null && !searchCriteria.getCovidFacilityType().isEmpty()) {
 			predicates.add(join2.get("covidFacilityType").in(searchCriteria.getCovidFacilityType()));
 		}

@@ -9,6 +9,7 @@ import org.iitbact.cc.requests.FacilityRequest;
 import org.iitbact.cc.requests.FacilitySearchCriteria;
 import org.iitbact.cc.requests.LinkFacilitiesRequest;
 import org.iitbact.cc.response.BooleanResponse;
+import org.iitbact.cc.response.FacilityLinkResponse;
 import org.iitbact.cc.response.FacilityProfile;
 import org.iitbact.cc.response.ListResponse;
 import org.iitbact.cc.services.FacilityServices;
@@ -63,8 +64,8 @@ public class FacilityController {
 
     @PostMapping(path = "/facilities/{facilityId}/links/get")
     @ApiOperation(response = FacilityDto.class,responseContainer = "List", value = "API to fetch links between facilities")
-    public ResponseBean<ListResponse<FacilityDto>> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
-        return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityServices.getLinkedFacilities(facilityId));
+    public ResponseBean<FacilityLinkResponse> getLinkedFacilities(@PathVariable int facilityId, @RequestBody BaseRequest request){
+        return controllerWrapper.wrap(FacilityLinkResponse::new, request, (uid) -> facilityServices.getLinkedFacilities(facilityId));
     }
     
     @PostMapping(path = "/facilities/{pageNo}")

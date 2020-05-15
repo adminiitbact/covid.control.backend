@@ -1,6 +1,13 @@
 package org.iitbact.cc.entities;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vladmihalcea.hibernate.type.json.JsonStringType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,18 +18,7 @@ import javax.persistence.MapsId;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vladmihalcea.hibernate.type.json.JsonStringType;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.iitbact.cc.beans.ContactDetails;
+import java.io.Serializable;
 
 
 /**
@@ -34,13 +30,13 @@ import org.iitbact.cc.beans.ContactDetails;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name="facility_contacts")
+@Table(name="facility_inventory")
 @TypeDef(
 	    name = "json",
 	    typeClass = JsonStringType.class
 	)
-@NamedQuery(name="FacilityContact.findAll", query="SELECT f FROM FacilityContact f")
-public class FacilityContact implements Serializable {
+@NamedQuery(name="FacilityInventory.findAll", query="SELECT f FROM FacilityInventory f")
+public class FacilityInventory implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id

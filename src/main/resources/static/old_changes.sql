@@ -15,8 +15,26 @@ ALTER TABLE `admin_users`
 
 	
 	alter table facilities
-    add column has_links not null default false;
+    add column has_links tinyint not null default false;
 
     update facilities f,facility_mapping m
     set has_links = true
     where f.facility_id = m.source_facility;
+
+    alter table facilities
+    add column operating_status tinyint not null default false;
+
+    alter table facility_mapping
+    add column covid_facility_type varchar(15);
+
+    ALTER TABLE facility_mapping
+    ADD CONSTRAINT unique_source_mapped_covid_facility_type UNIQUE (source_facility, mapped_facility, covid_facility_type);
+
+    insert ignore facility_mapping (source_facility, mapped_facility, covid_facility_type)
+    select distinct source_facility, mapped_facility,
+                IF(severity = "MILD", "CCC",
+                   IF(severity = "MODERATE", "DCHC",
+                      IF(severity = "SEVERE", "DCH",
+                         NULL))) as covid_facility_type from facility_mapping inner join wards on facility_mapping.mapped_facility = wards.facility_id;
+                                                                                                                                                                                                   on facility_mapping.mapped_facility = wards.facility_id;
+
