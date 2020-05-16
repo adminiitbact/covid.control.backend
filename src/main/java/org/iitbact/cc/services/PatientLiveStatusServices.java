@@ -80,7 +80,7 @@ public class PatientLiveStatusServices {
 				"SUM(CASE WHEN p.age BETWEEN 65 AND 74 THEN 1 ELSE 0 END) AS D,\n" +
 				"SUM(CASE WHEN p.age > 74 THEN 1 ELSE 0 END) AS E\n" +
 				"from hospitaldb.patients p , hospitaldb.patient_live_status x , hospitaldb.wards y\n" +
-				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id AND x.facility_id = 3\n" +
+				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id AND x.facility_id = " + facilityId + " \n" +
 				"GROUP BY y.severity; \n");
 
 
@@ -100,6 +100,59 @@ public class PatientLiveStatusServices {
 
 	}
 
+	public List<PatientStatsDto> getPatientStatsAll() {
+		List<PatientStatsDto> number = patientLiveStatusRepository.getCountAll();
+		return number;
+	}
+
+	public List<PatientStatsGenderDto> getPatientStatsByGenderAll() {
+
+
+		Query q = em.createNativeQuery("SELECT p.gender, COUNT(*), y.severity FROM hospitaldb.patients p, hospitaldb.patient_live_status x , hospitaldb.wards y\n" +
+				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id  " + " GROUP BY y.severity, p.gender");
+		List<Object[]> data = q.getResultList();
+		List l = new ArrayList<PatientStatsGenderDto>();
+
+		for (Object[] a : data) {
+
+			l.add(new PatientStatsGenderDto(0, (String) a[0],((BigInteger) a[1]).longValue(),(String) a[2]));
+
+		}
+
+		return l;
+		//List<PatientStatsDto> number = patientLiveStatusRepository.getCount(facilityId);
+		//return number;
+
+
+	}
+
+
+	public List<PatientStatsAgeDto> getPatientStatsByAgeAll() {
+
+
+		Query q = em.createNativeQuery("SELECT y.severity, SUM(CASE WHEN p.age < 18 THEN 1 ELSE 0 END) AS A, SUM(CASE WHEN p.age BETWEEN 18 AND 44 THEN 1 ELSE 0 END) AS B,SUM(CASE WHEN p.age BETWEEN 45 AND 64 THEN 1 ELSE 0 END) AS C,\n" +
+				"SUM(CASE WHEN p.age BETWEEN 65 AND 74 THEN 1 ELSE 0 END) AS D,\n" +
+				"SUM(CASE WHEN p.age > 74 THEN 1 ELSE 0 END) AS E\n" +
+				"from hospitaldb.patients p , hospitaldb.patient_live_status x , hospitaldb.wards y\n" +
+				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id  "  + " \n" +
+				"GROUP BY y.severity; \n");
+
+
+		List<Object[]> data = q.getResultList();
+		List l = new ArrayList<PatientStatsAgeDto>();
+
+		for (Object[] a : data) {
+
+			l.add(new PatientStatsAgeDto( 0, (String) a[0],((BigDecimal) a[1]).longValue(),((BigDecimal) a[2]).longValue(),((BigDecimal) a[3]).longValue(),((BigDecimal) a[4]).longValue(),((BigDecimal) a[5]).longValue() ));
+
+		}
+
+		return l;
+		//List<PatientStatsDto> number = patientLiveStatusRepository.getCount(facilityId);
+		//return number;
+
+
+	}
 
 
 }

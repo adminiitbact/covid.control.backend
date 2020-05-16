@@ -57,5 +57,24 @@ public class PatientController {
 	public ResponseBean<ListResponse<PatientStatsAgeDto>> getPatientStatsByAge(@PathVariable int facilityId, @RequestBody BaseRequest request ){
 		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientLiveStatusServices.getPatientStatsByAge(facilityId));
 	}
+
+	@PostMapping(path = "/patients/stats/")
+	@ApiOperation(response = PatientStatsDto.class,responseContainer = "List", value = "API to get count of patients for ALL facilities")
+	public ResponseBean<ListResponse<PatientStatsDto>> getPatientStatsAll(@RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientLiveStatusServices.getPatientStatsAll());
+	}
+
+	@PostMapping(path = "/patients/stats/gender/")
+	@ApiOperation(response = PatientStatsGenderDto.class,responseContainer = "List", value = "API to get count of patients based on gender for ALL facilities")
+	public ResponseBean<ListResponse<PatientStatsGenderDto>> getPatientStatsByGenderAll(@RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientLiveStatusServices.getPatientStatsByGenderAll());
+	}
+
+	@PostMapping(path = "/patients/stats/age/")
+	@ApiOperation(response = PatientStatsAgeDto.class,responseContainer = "List", value = "API to get count of patients based on age for ALL facilities")
+	public ResponseBean<ListResponse<PatientStatsAgeDto>> getPatientStatsByAgeAll(@RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientLiveStatusServices.getPatientStatsByAgeAll());
+	}
+
     
 }

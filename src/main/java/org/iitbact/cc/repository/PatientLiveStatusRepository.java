@@ -21,4 +21,14 @@ public interface PatientLiveStatusRepository extends JpaRepository<PatientLiveSt
             "WHERE p.facility.facilityId in ?1  " )
 
     List<PatientStatsDto> getCount(@Param("facilityId") int facilityId) ;
+
+
+
+    @Query(value = "SELECT new org.iitbact.cc.dto.PatientStatsDto( " +
+            "0 ," +
+            "COUNT(*) )  " +
+            "FROM PatientLiveStatus p   ")
+
+    List<PatientStatsDto> getCountAll() ;
+
 }
