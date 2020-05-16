@@ -53,7 +53,7 @@ public class PatientController {
 	}
 
 	@PostMapping(path = "/patients/stats/age/{facilityId}")
-	@ApiOperation(response = PatientStatsAgeDto.class,responseContainer = "List", value = "API to get count of patients based on age at a particular {facilityId}")
+	@ApiOperation(response = PatientStatsAgeDto.class,responseContainer = "List", value = "API to get count of patients based on age for a particular {facilityId}")
 	public ResponseBean<ListResponse<PatientStatsAgeDto>> getPatientStatsByAge(@PathVariable int facilityId, @RequestBody BaseRequest request ){
 		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> patientLiveStatusServices.getPatientStatsByAge(facilityId));
 	}
