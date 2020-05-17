@@ -56,7 +56,7 @@ public class PatientDischargeReportService {
 
 		if (reportName.equals(ReportNames.DAILY_PATIENT_DISCHARGE_LIST)) {
 
-			entries.add(new String[] { "20. Daily Patient Discharge List" });
+			entries.add(new String[] { "Daily Patient Discharge List" });
 			entries.add(new String[] { "" });
 			entries.add(new String[] { "District/Corpoation", commonReportCriteria.getJurisdiction(), "From date",
 					commonReportCriteria.getStartDate().toString(), "To Date",
@@ -73,7 +73,7 @@ public class PatientDischargeReportService {
 
 		} else {
 
-			entries.add(new String[] { "21. Daily Patient Death List" });
+			entries.add(new String[] { "Daily Patient Death List" });
 			entries.add(new String[] { "" });
 			entries.add(new String[] { "District/Corpoation", commonReportCriteria.getJurisdiction(), "From date",
 					commonReportCriteria.getStartDate().toString(), "To Date",
