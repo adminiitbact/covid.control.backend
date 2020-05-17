@@ -1,17 +1,18 @@
 package org.iitbact.cc.controllers;
 
 import org.iitbact.cc.beans.ResponseBean;
+import org.iitbact.cc.dto.FacilityBedsStatsDto;
+import org.iitbact.cc.dto.FacilityBedsStatsOverviewDto;
 import org.iitbact.cc.dto.FacilityDto;
+import org.iitbact.cc.dto.PatientStatsDto;
 import org.iitbact.cc.helper.ControllerWrapper;
 import org.iitbact.cc.requests.BaseRequest;
 import org.iitbact.cc.requests.FacilityRequest;
 import org.iitbact.cc.requests.FacilitySearchCriteria;
 import org.iitbact.cc.requests.LinkFacilitiesRequest;
-import org.iitbact.cc.response.BooleanResponse;
-import org.iitbact.cc.response.FacilityLinkResponse;
-import org.iitbact.cc.response.FacilityProfile;
-import org.iitbact.cc.response.ListResponseType2;
+import org.iitbact.cc.response.*;
 import org.iitbact.cc.services.FacilityServices;
+import org.iitbact.cc.services.FacilityStatsServices;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,10 +27,12 @@ public class FacilityController {
 
 	private final ControllerWrapper controllerWrapper;
 	private final FacilityServices facilityServices;
+	private final FacilityStatsServices facilityStatsServices;
 
-	public FacilityController(ControllerWrapper controllerWrapper, FacilityServices facilityServices) {
+	public FacilityController(ControllerWrapper controllerWrapper, FacilityServices facilityServices, FacilityStatsServices facilityStatsServices) {
 		this.controllerWrapper = controllerWrapper;
 		this.facilityServices = facilityServices;
+		this.facilityStatsServices = facilityStatsServices ;
 	}
 
 	@PostMapping(path = "/facilities/new")
@@ -72,5 +75,31 @@ public class FacilityController {
     public ResponseBean<ListResponseType2<FacilityDto>> getFacilities(@PathVariable int offset,@PathVariable int limit, @RequestBody FacilitySearchCriteria request){
         return controllerWrapper.wrap(ListResponseType2::new, request, (uid) -> facilityServices.getFacilities(offset,limit,uid, request));
     }
+
+	@PostMapping(path = "/facilities/stats/beds/")
+	@ApiOperation(response = FacilityBedsStatsDto.class,responseContainer = "List", value = "API to get count of beds by severity and covid status for ALL facilities")
+	public ResponseBean<ListResponse<FacilityBedsStatsDto>> getBedsStatsAll(@RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityStatsServices.getBedsStatsAll());
+	}
+
+	@PostMapping(path = "/facilities/stats/beds/{facilityId}")
+	@ApiOperation(response = FacilityBedsStatsDto.class,responseContainer = "List", value = "API to get count of beds by severity and covid status for a {facilityId}")
+	public ResponseBean<ListResponse<FacilityBedsStatsDto>> getBedsStatsAll(@PathVariable int facilityId,@RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityStatsServices.getBedsStats(facilityId));
+	}
+
+	@PostMapping(path = "/facilities/stats/beds/overview/")
+	@ApiOperation(response = FacilityBedsStatsOverviewDto.class,responseContainer = "List", value = "API to get count of total and available COVID and non COVID beds for ALL facilities")
+	public ResponseBean<ListResponse<FacilityBedsStatsOverviewDto>> getBedsStatsOverviewAll(@RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityStatsServices.getBedsStatsOverviewAll());
+	}
+
+	@PostMapping(path = "/facilities/stats/beds/overview/{facilityId}")
+	@ApiOperation(response = FacilityBedsStatsOverviewDto.class,responseContainer = "List", value = "API to get count of total and available COVID and non COVID beds for a {facilityId}")
+	public ResponseBean<ListResponse<FacilityBedsStatsOverviewDto>> getBedsStatsOverviewAll(@PathVariable int facilityId,@RequestBody BaseRequest request ){
+		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityStatsServices.getBedsStatsOverview(facilityId));
+	}
+
+
     
 }

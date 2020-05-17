@@ -58,6 +58,7 @@ public class PatientLiveStatus implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="facility_id", referencedColumnName="facility_id")
 	private Facility facility;
+
 	
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="patient_id", referencedColumnName="patient_id")
