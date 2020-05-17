@@ -90,6 +90,12 @@ public class CommonReportsController {
 						totalPatientsReportService.fetchSumIsolationPatientList(userId, commonReportCriteria),
 						fileName));
 				break;
+			case ReportNames.COVID_FACILITIES_SUMMARY:
+					fileName = "CovidFacilitiesSummary" + suffixFilename;
+					file = Optional.ofNullable(writeCsvFile(
+							totalPatientsReportService.fetchCovidFacilitiesSummaryList(userId, commonReportCriteria),
+							fileName));
+				break;	
 			default:
 				throw new IllegalArgumentException("Invalid report name");
 			}
