@@ -95,6 +95,7 @@ public class FacilityController {
 	@ApiOperation(response = FacilityBedsStatsDto.class,responseContainer = "List", value = "API to get count of beds by severity and covid status for a {facilityId}")
 	public ResponseBean<ListResponse<FacilityBedsStatsDto>> getBedsStatsAll(@PathVariable int facilityId,@RequestBody BaseRequest request ){
 		return controllerWrapper.wrap(ListResponse::new, request, (uid) -> facilityStatsServices.getBedsStats(uid,facilityId));
+
 	}
 
 	@PostMapping(path = "/facilities/stats/beds/overview/")
@@ -126,7 +127,6 @@ public class FacilityController {
 	public ResponseBean<FacilityUserProfile> addHasuraClaimsToExistingUsers(@ApiParam(required = true, example = "1") @PathVariable int facilityId,@RequestBody BaseRequest request){
 		return controllerWrapper.wrap(FacilityUserProfile::new, request, (uid) -> facilityServices.addHasuraClaimsToExistingUsers(uid,facilityId));
 	}
-    
 	
 	@PostMapping(path = "/facilities/decode/token/{token}/get")
 	@ApiOperation(response = FacilityUserProfile.class,value = "Decode Firebasetoken")

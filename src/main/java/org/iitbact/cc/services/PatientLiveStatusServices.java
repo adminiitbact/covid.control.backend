@@ -47,7 +47,7 @@ public class PatientLiveStatusServices {
 
 	@Autowired
 	private UserServices userServices;
-	
+
 	public PatientLiveStatusServices (PatientLiveStatusRepository p) {
 		this.patientLiveStatusRepository = p ;
 	}
@@ -63,6 +63,7 @@ public class PatientLiveStatusServices {
 		validationService.facilityValidation(uid, facilityId);
 		Query q = em.createNativeQuery("SELECT x.facility_id, p.gender, COUNT(*), y.severity FROM hospitaldb.patients p, hospitaldb.patient_live_status x , hospitaldb.wards y\n" +
 				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id AND x.facility_id = :facilityId GROUP BY y.severity, p.gender").setParameter("facilityId", facilityId);
+
 		List<Object[]> data = q.getResultList();
 		List l = new ArrayList<PatientStatsGenderDto>();
 
@@ -83,13 +84,13 @@ public class PatientLiveStatusServices {
 	public List<PatientStatsAgeDto> getPatientStatsByAge(String uid,int facilityId) throws CovidControlException {
 
 		validationService.facilityValidation(uid, facilityId);
+
 		Query q = em.createNativeQuery("SELECT x.facility_id, y.severity, SUM(CASE WHEN p.age < 18 THEN 1 ELSE 0 END) AS A, SUM(CASE WHEN p.age BETWEEN 18 AND 44 THEN 1 ELSE 0 END) AS B,SUM(CASE WHEN p.age BETWEEN 45 AND 64 THEN 1 ELSE 0 END) AS C,\n" +
 				"SUM(CASE WHEN p.age BETWEEN 65 AND 74 THEN 1 ELSE 0 END) AS D,\n" +
 				"SUM(CASE WHEN p.age > 74 THEN 1 ELSE 0 END) AS E\n" +
 				"from hospitaldb.patients p , hospitaldb.patient_live_status x , hospitaldb.wards y\n" +
 				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id AND x.facility_id = :fId " +
 				" GROUP BY y.severity; \n").setParameter("fId", facilityId);
-
 
 		List<Object[]> data = q.getResultList();
 		List l = new ArrayList<PatientStatsAgeDto>();

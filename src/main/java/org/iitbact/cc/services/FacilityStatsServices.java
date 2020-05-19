@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -39,6 +40,7 @@ public class FacilityStatsServices {
 		List l = new ArrayList<FacilityBedsStatsDto>();
 
 		for (Object[] a : data) {
+
 			l.add(new FacilityBedsStatsDto(((Integer) a[0]).intValue(), (String) a[1], (String) a[2],((BigDecimal) a[3]).longValue(), ((BigDecimal) a[4]).longValue()));
 
 		}
@@ -50,12 +52,14 @@ public class FacilityStatsServices {
 	public List<FacilityBedsStatsDto> getBedsStatsAll(String uid) throws CovidControlException {
 		AdminUser user= userServices.profile(uid);
 		Query q = em.createNativeQuery("SELECT y.severity, y.covid_status, SUM(y.total_beds), SUM(y.available_beds)  FROM hospitaldb.wards y INNER JOIN hospitaldb.facilities f ON y.facility_id=f.facility_id  WHERE y.covid_ward = 1 and f.region=:region GROUP By y.severity, y.covid_status").setParameter("region", user.getRegion());;
+
 		List<Object[]> data = q.getResultList();
 		List l = new ArrayList<FacilityBedsStatsDto>();
 
 		for (Object[] a : data) {
 			l.add(new FacilityBedsStatsDto(0, (String) a[0], (String) a[1],((BigDecimal) a[2]).longValue(), ((BigDecimal) a[3]).longValue()));
 		}
+
 		return l;
 
 	}
@@ -77,6 +81,7 @@ public class FacilityStatsServices {
 	public List<FacilityBedsStatsOverviewDto> getBedsStatsOverviewAll(String uid) throws CovidControlException {
 		AdminUser user=userServices.profile(uid);
 		Query q = em.createNativeQuery("SELECT f.government_hospital,SUM(w.total_beds), SUM(CASE WHEN w.covid_ward = 1 THEN w.total_beds ELSE 0 END), SUM(w.available_beds), SUM(CASE WHEN w.covid_ward = 1 THEN w.available_beds ELSE 0 END)  FROM hospitaldb.wards w , hospitaldb.facilities f where f.region=:region GROUP BY f.government_hospital").setParameter("region", user.getRegion());
+
 		List<Object[]> data = q.getResultList();
 		List l = new ArrayList<FacilityBedsStatsOverviewDto>();
 

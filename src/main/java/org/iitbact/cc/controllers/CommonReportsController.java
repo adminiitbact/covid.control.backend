@@ -2,9 +2,12 @@ package org.iitbact.cc.controllers;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -49,7 +52,8 @@ public class CommonReportsController {
 
 	@PostMapping(value = "/generate")
 	@ApiOperation(value = "API request to export common report")
-	public ResponseEntity<Object> getGeneratedReports(HttpServletResponse response,
+
+	public ResponseEntity getGeneratedReports(HttpServletResponse response,
 			@RequestBody CommonReportCriteria commonReportCriteria) throws Exception {
 
 		CovidControlErpError error = null;
@@ -127,6 +131,22 @@ public class CommonReportsController {
 				.body(error);
 	}
 
+
+	public String prepareCsvData(List<String[]> data, String body) throws IOException {
+		if (CollectionUtils.isEmpty(data)) {
+			return null;
+		}
+
+		for (int i = 0; i < data.size(); i++) {
+			String[] x = data.get(i);
+			for (int j = 0; j < x.length; j++) {
+				body = body + x[j];
+				body = body + ",";
+			}
+			body = body + "\n";
+		}
+		return body;
+	}
 
 	public String prepareCsvData(List<String[]> data, String body) throws IOException {
 		if (CollectionUtils.isEmpty(data)) {

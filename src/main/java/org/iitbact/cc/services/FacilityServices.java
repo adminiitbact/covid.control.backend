@@ -261,6 +261,7 @@ public class FacilityServices {
 		List<FacilityDto> list = fetchAvailabilityStatusAndLinkCountConvertToDto(page.toList());
 
 		org.iitbact.cc.beans.Page<FacilityDto> slice = new org.iitbact.cc.beans.Page<FacilityDto>();
+
 		slice.setElements(list);
 		slice.setMeta(new PageInfo(limit, offset, page.getTotalElements()));
 		return slice;
