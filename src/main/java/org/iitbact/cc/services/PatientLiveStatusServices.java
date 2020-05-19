@@ -13,6 +13,7 @@ import org.iitbact.cc.entities.PatientLiveStatus;
 import org.iitbact.cc.exceptions.CovidControlException;
 import org.iitbact.cc.repository.PatientLiveStatusRepository;
 import org.iitbact.cc.requests.PatientSearchCriteria;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +34,6 @@ import org.iitbact.cc.repository.PatientLiveStatusRepository ;
 
 
 
-@Slf4j
 @Service
 public class PatientLiveStatusServices {
 
@@ -41,21 +41,28 @@ public class PatientLiveStatusServices {
 	private EntityManager em;
 
 	private final PatientLiveStatusRepository patientLiveStatusRepository;
+	
+	@Autowired
+	private ApiValidationService validationService;
 
+	@Autowired
+	private UserServices userServices;
+	
 	public PatientLiveStatusServices (PatientLiveStatusRepository p) {
 		this.patientLiveStatusRepository = p ;
 	}
 
-	public List<PatientStatsDto> getPatientStats(int facilityId) {
+	public List<PatientStatsDto> getPatientStats(String uid,int facilityId) throws CovidControlException {
+		validationService.facilityValidation(uid, facilityId);
 		List<PatientStatsDto> number = patientLiveStatusRepository.getCount(facilityId);
         return number;
 	}
 
-	public List<PatientStatsGenderDto> getPatientStatsByGender(int facilityId) {
+	public List<PatientStatsGenderDto> getPatientStatsByGender(String uid,int facilityId) throws CovidControlException {
 
-
+		validationService.facilityValidation(uid, facilityId);
 		Query q = em.createNativeQuery("SELECT x.facility_id, p.gender, COUNT(*), y.severity FROM hospitaldb.patients p, hospitaldb.patient_live_status x , hospitaldb.wards y\n" +
-				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id AND x.facility_id = " + facilityId  + " GROUP BY y.severity, p.gender");
+				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id AND x.facility_id = :facilityId GROUP BY y.severity, p.gender").setParameter("facilityId", facilityId);
 		List<Object[]> data = q.getResultList();
 		List l = new ArrayList<PatientStatsGenderDto>();
 
@@ -73,15 +80,15 @@ public class PatientLiveStatusServices {
 	}
 
 
-	public List<PatientStatsAgeDto> getPatientStatsByAge(int facilityId) {
+	public List<PatientStatsAgeDto> getPatientStatsByAge(String uid,int facilityId) throws CovidControlException {
 
-
+		validationService.facilityValidation(uid, facilityId);
 		Query q = em.createNativeQuery("SELECT x.facility_id, y.severity, SUM(CASE WHEN p.age < 18 THEN 1 ELSE 0 END) AS A, SUM(CASE WHEN p.age BETWEEN 18 AND 44 THEN 1 ELSE 0 END) AS B,SUM(CASE WHEN p.age BETWEEN 45 AND 64 THEN 1 ELSE 0 END) AS C,\n" +
 				"SUM(CASE WHEN p.age BETWEEN 65 AND 74 THEN 1 ELSE 0 END) AS D,\n" +
 				"SUM(CASE WHEN p.age > 74 THEN 1 ELSE 0 END) AS E\n" +
 				"from hospitaldb.patients p , hospitaldb.patient_live_status x , hospitaldb.wards y\n" +
-				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id AND x.facility_id = " + facilityId + " \n" +
-				"GROUP BY y.severity; \n");
+				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id AND x.facility_id = :fId " +
+				" GROUP BY y.severity; \n").setParameter("fId", facilityId);
 
 
 		List<Object[]> data = q.getResultList();
@@ -100,16 +107,17 @@ public class PatientLiveStatusServices {
 
 	}
 
-	public List<PatientStatsDto> getPatientStatsAll() {
+	public List<PatientStatsDto> getPatientStatsAll(String uid) throws CovidControlException {
+		AdminUser user= userServices.profile(uid);//TODO put region in patients
 		List<PatientStatsDto> number = patientLiveStatusRepository.getCountAll();
 		return number;
 	}
 
-	public List<PatientStatsGenderDto> getPatientStatsByGenderAll() {
-
+	public List<PatientStatsGenderDto> getPatientStatsByGenderAll(String uid) throws CovidControlException {
+		AdminUser user= userServices.profile(uid);//TODO put region in patients
 
 		Query q = em.createNativeQuery("SELECT p.gender, COUNT(*), y.severity FROM hospitaldb.patients p, hospitaldb.patient_live_status x , hospitaldb.wards y\n" +
-				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id  " + " GROUP BY y.severity, p.gender");
+				"WHERE p.patient_id = x.patient_id AND x.ward_id = y.id  GROUP BY y.severity, p.gender");
 		List<Object[]> data = q.getResultList();
 		List l = new ArrayList<PatientStatsGenderDto>();
 
@@ -127,8 +135,8 @@ public class PatientLiveStatusServices {
 	}
 
 
-	public List<PatientStatsAgeDto> getPatientStatsByAgeAll() {
-
+	public List<PatientStatsAgeDto> getPatientStatsByAgeAll(String uid) throws CovidControlException {
+		AdminUser user= userServices.profile(uid);//TODO put region in patients
 
 		Query q = em.createNativeQuery("SELECT y.severity, SUM(CASE WHEN p.age < 18 THEN 1 ELSE 0 END) AS A, SUM(CASE WHEN p.age BETWEEN 18 AND 44 THEN 1 ELSE 0 END) AS B,SUM(CASE WHEN p.age BETWEEN 45 AND 64 THEN 1 ELSE 0 END) AS C,\n" +
 				"SUM(CASE WHEN p.age BETWEEN 65 AND 74 THEN 1 ELSE 0 END) AS D,\n" +

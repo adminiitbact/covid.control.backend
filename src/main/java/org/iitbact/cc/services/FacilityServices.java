@@ -83,7 +83,7 @@ public class FacilityServices {
 		facilityRepository.save(facility);
 		
 		log.info("Facility created successfully with id {}", request.getFacilityProfile().getFacilityId());
-		return toFacilityDto(request.getFacilityProfile());
+		return toFacilityDto(facility);
 	}
 
 	public FacilityDto editFacility(int facilityId, FacilityRequest facilityRequest, String uid)
