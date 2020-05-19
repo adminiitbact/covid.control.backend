@@ -131,23 +131,6 @@ public class CommonReportsController {
 				.body(error);
 	}
 
-
-	public String prepareCsvData(List<String[]> data, String body) throws IOException {
-		if (CollectionUtils.isEmpty(data)) {
-			return null;
-		}
-
-		for (int i = 0; i < data.size(); i++) {
-			String[] x = data.get(i);
-			for (int j = 0; j < x.length; j++) {
-				body = body + x[j];
-				body = body + ",";
-			}
-			body = body + "\n";
-		}
-		return body;
-	}
-
 	public String prepareCsvData(List<String[]> data, String body) throws IOException {
 		if (CollectionUtils.isEmpty(data)) {
 			return null;
