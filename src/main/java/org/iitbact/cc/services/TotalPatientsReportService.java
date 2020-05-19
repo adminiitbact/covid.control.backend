@@ -51,16 +51,18 @@ public class TotalPatientsReportService {
 				+ "select  facility.name, count(distinct patients.name) as admission_count "
 				+ "from patients patients  inner join patient_history history on history.patient_id=patients.patient_id  "
 				+ "inner join facilities facility on history.facility_id=facility.facility_id "
-				+ "where  facility.jurisdiction = ?" + "group by  facility.name " + ") admission " + "LEFT join " + "("
+				+ "where facility.region= ? and facility.jurisdiction = ?" + "group by  facility.name " + ") admission " + "LEFT join " + "("
 				+ "select  facility.name, count(discharged.creation_time) as discharged_count "
 				+ "from patients patients  inner join patient_discharged discharged on discharged.patient_id=patients.patient_id  "
 				+ "inner join facilities facility on discharged.facility_id=facility.facility_id  "
-				+ "where discharged.reason=\"DISCHARGED\" and facility.jurisdiction = ?" + "group by facility.name "
+				+ "where discharged.reason=\"DISCHARGED\" and facility.region= ? and facility.jurisdiction = ?" + "group by facility.name "
 				+ ") discharged " + "on admission.name=discharged.name";
 
 		Query query = em.createNativeQuery(qlString);
-		query.setParameter(1, commonReportCriteria.getJurisdiction());
+		query.setParameter(1, user.getRegion());
 		query.setParameter(2, commonReportCriteria.getJurisdiction());
+		query.setParameter(3, user.getRegion());
+		query.setParameter(4, commonReportCriteria.getJurisdiction());
 		List<Object[]> resultList = query.getResultList();
 
 		Integer dischargedCount;
@@ -125,59 +127,67 @@ public class TotalPatientsReportService {
 				"  Select sum(total_beds)Cases_Capacity from    facilities f \n" +
 				" inner join wards w on f.facility_id=w.facility_id\n" +
 				" where severity='severe' \n" +
-				" and f.jurisdiction=? \n" +
+				" and f.jurisdiction=? and f.region=? \n" +
 				" group by severity,f.jurisdiction \n" +
 				" )severe_cases_capacity,\n" +
 				" (\n" +
 				"  Select sum(total_beds)Cases_Capacity from    facilities f \n" +
 				" inner join wards w on f.facility_id=w.facility_id\n" +
 				" where severity='MILD' \n" +
-				" and f.jurisdiction=? \n" +
+				" and f.jurisdiction=?  and f.region=? \n" +
 				" group by severity,f.jurisdiction \n" +
 				" )mild_cases_capacity,\n" +
 				" (\n" +
 				"  Select sum(total_beds)Cases_Capacity from    facilities f \n" +
 				" inner join wards w on f.facility_id=w.facility_id\n" +
 				" where severity='moderate' \n" +
-				" and f.jurisdiction=? \n" +
+				" and f.jurisdiction=?  and f.region=? \n" +
 				" group by severity,f.jurisdiction \n" +
 				" )moderate_cases_capacity,\n" +
 				"   (\n" +
 				"  Select sum(available_beds)Cases_Capacity from    facilities f \n" +
 				" inner join wards w on f.facility_id=w.facility_id\n" +
 				" where severity='severe' \n" +
-				" and f.jurisdiction=? \n" +
+				" and f.jurisdiction=?  and f.region=? \n" +
 				" group by severity,f.jurisdiction \n" +
 				" )severe_cases_occupancy,\n" +
 				" (\n" +
 				"  Select sum(available_beds)Cases_Capacity from    facilities f \n" +
 				" inner join wards w on f.facility_id=w.facility_id\n" +
 				" where severity='MILD' \n" +
-				" and f.jurisdiction=? \n" +
+				" and f.jurisdiction=?  and f.region=? \n" +
 				" group by severity,f.jurisdiction \n" +
 				" )mild_cases_occupancy,\n" +
 				" (\n" +
 				"  Select sum(available_beds)Cases_Capacity from    facilities f \n" +
 				" inner join wards w on f.facility_id=w.facility_id\n" +
 				" where severity='moderate' \n" +
-				" and f.jurisdiction=? \n" +
+				" and f.jurisdiction=?  and f.region=? \n" +
 				" group by severity,f.jurisdiction \n" +
 				" )moderate_cases_occupancy\n" +
 				" from    facilities f \n" +
 				"  inner join wards w on f.facility_id=w.facility_id\n" +
-				" where f.jurisdiction=? \n" +
+				" where f.jurisdiction=?  and f.region=? \n" +
 				" group by f.jurisdiction,covid_facility_type ;\n";
 
 		System.out.println("qlString ====>"+query1);
 
 		Query query = em.createNativeQuery(query1);
-		query.setParameter(1, commonReportCriteria.getJurisdiction());
-		query.setParameter(2, commonReportCriteria.getJurisdiction());
-		query.setParameter(3, commonReportCriteria.getJurisdiction());
-		query.setParameter(4, commonReportCriteria.getJurisdiction());
-		query.setParameter(5, commonReportCriteria.getJurisdiction());
-		query.setParameter(6, commonReportCriteria.getJurisdiction());
-		query.setParameter(7, commonReportCriteria.getJurisdiction());
+		int i=0;
+		query.setParameter(i++, commonReportCriteria.getJurisdiction());
+		query.setParameter(i++ ,user.getRegion());
+		query.setParameter(i++, commonReportCriteria.getJurisdiction());
+		query.setParameter(i++ ,user.getRegion());
+		query.setParameter(i++, commonReportCriteria.getJurisdiction());
+		query.setParameter(i++ ,user.getRegion());
+		query.setParameter(i++, commonReportCriteria.getJurisdiction());
+		query.setParameter(i++ ,user.getRegion());
+		query.setParameter(i++, commonReportCriteria.getJurisdiction());
+		query.setParameter(i++ ,user.getRegion());
+		query.setParameter(i++, commonReportCriteria.getJurisdiction());
+		query.setParameter(i++ ,user.getRegion());
+		query.setParameter(i++, commonReportCriteria.getJurisdiction());
+		query.setParameter(i++ ,user.getRegion());		
 
 		List<Object[]> resultList = query.getResultList();
 

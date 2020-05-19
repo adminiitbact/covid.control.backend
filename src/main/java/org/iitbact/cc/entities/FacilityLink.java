@@ -1,9 +1,6 @@
 package org.iitbact.cc.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,7 +11,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import java.io.Serializable;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +26,9 @@ import java.io.Serializable;
 @NamedQuery(name = "FacilityLink.findAll", query = "SELECT a FROM FacilityLink a")
 public class FacilityLink implements Serializable {
 
-    @Id
+	private static final long serialVersionUID = -2338022546557596303L;
+
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;

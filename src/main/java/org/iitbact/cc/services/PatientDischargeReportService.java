@@ -48,7 +48,7 @@ public class PatientDischargeReportService {
 		System.out.println("fetchDailyPatientDischargeList  start");
 		LOGGER.debug("fetchDailyPatientDischargeList start");
 
-		AdminUser user = userService.profile(uid);
+		AdminUser user= userService.profile(uid);
 
 		List<String[]> entries = new ArrayList<>();
 		String testStatus;
@@ -110,6 +110,8 @@ public class PatientDischargeReportService {
 		cq.groupBy(groupCondition);
 
 		List<Predicate> predicates = new ArrayList<>();
+		predicates.add(cb.equal(join2.get("region"),user.getRegion()));
+		
 		if (null != testStatus && !testStatus.isEmpty()) {
 			predicates.add(cb.equal(root.get("testStatus"), testStatus));
 		}

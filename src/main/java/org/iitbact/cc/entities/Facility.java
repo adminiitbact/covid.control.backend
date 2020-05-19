@@ -139,7 +139,7 @@ public class Facility implements Serializable {
 
     }
 
-	public void copy(Facility that,AdminUser user) {
+	public void copy(Facility that) {
 		this.address = that.address;
 		this.agreementStatus = that.agreementStatus;
 		this.area = that.area;
@@ -181,8 +181,9 @@ public class Facility implements Serializable {
 		if(this.facilityMedstaff != null) {
 			this.facilityMedstaff.setFacilityId(facilityId);
 		}
-
-		this.region = user.getRegion();
+		
+		//cannot edit this
+		//this.region = that.getRegion();
 		this.operatingStatus = that.operatingStatus;
 		// hasLinks will not be updated through the front-end ever.
 

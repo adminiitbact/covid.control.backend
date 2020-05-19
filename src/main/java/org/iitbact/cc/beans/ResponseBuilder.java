@@ -6,7 +6,7 @@ import org.iitbact.cc.exceptions.CovidControlErpError;
 
 @Data
 @AllArgsConstructor
-public class ResponseBuilder<T extends BaseBean> {
+public class ResponseBuilder<T extends BaseBean<?>> {
     private T data;
     private CovidControlErpError error;
 

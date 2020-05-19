@@ -3,5 +3,17 @@
 	<persistence-unit name="covid-control">
 		<class>org.iitbact.cc.entities.AdminUser</class>
 		<class>org.iitbact.cc.entities.Facility</class>
+		<class>org.iitbact.cc.entities.Area</class>
+		<class>org.iitbact.cc.entities.FacilityAssets</class>
+		<class>org.iitbact.cc.entities.FacilityChecklist</class>
+		<class>org.iitbact.cc.entities.FacilityContact</class>
+		<class>org.iitbact.cc.entities.FacilityInventory</class>
+		<class>org.iitbact.cc.entities.FacilityLink</class>
+		<class>org.iitbact.cc.entities.FacilityMedstaff</class>
+		<class>org.iitbact.cc.entities.Patient</class>
+		<class>org.iitbact.cc.entities.PatientDischarged</class>
+		<class>org.iitbact.cc.entities.PatientHistory</class>
+		<class>org.iitbact.cc.entities.PatientLiveStatus</class>
+		<class>org.iitbact.cc.entities.Ward</class>
 	</persistence-unit>
 </persistence>

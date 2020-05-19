@@ -1,7 +1,6 @@
 package org.iitbact.cc.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.iitbact.cc.dto.LinkCount;
 import org.iitbact.cc.entities.FacilityLink;

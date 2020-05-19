@@ -14,4 +14,6 @@ public class CovidControlErrorMsg {
     public static final String DATE_FORMAT_ERROR = "Date is not in correct format!";
     public static final String FACILITY_DOES_NOT_EXIST = "Invalid Facility Id. Facility does not exist!";
     public static final String FACILITY_ID_SHOULD_BE_NULL = "Facility Id should be null";
+	public static final String NOT_OPERATIONAL = "Facility is not operational!";
+	public static final String USER_ALREADY_EXIST = "User already exist with this emailId. Consider changing the organisation email!";
 }

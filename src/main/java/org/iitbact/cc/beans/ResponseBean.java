@@ -1,10 +1,11 @@
 package org.iitbact.cc.beans;
 
-import lombok.Data;
 import org.iitbact.cc.exceptions.CovidControlErpError;
 
+import lombok.Data;
+
 @Data
-public class ResponseBean<T extends BaseBean> {
+public class ResponseBean<T extends BaseBean<?>> {
     private CovidControlErpError error;
     private T data;
 

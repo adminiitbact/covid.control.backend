@@ -14,6 +14,8 @@ public class CovidControlErrorCode {
     public static final long TOKEN_INVALID = 11;
     public static final long FACILITY_DOES_NOT_EXIST = 12;
     public static final long FACILITY_ID_SHOULD_BE_NULL = 13;
+	public static final long NOT_OPERATIONAL = 14;
+	public static final long USER_ALREADY_EXIST = 15;
 
 }
 

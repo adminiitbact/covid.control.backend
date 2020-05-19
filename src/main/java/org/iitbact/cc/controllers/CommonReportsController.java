@@ -1,17 +1,13 @@
 package org.iitbact.cc.controllers;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.Scanner;
+
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,7 +21,6 @@ import org.iitbact.cc.services.PatientDischargeReportService;
 import org.iitbact.cc.services.TotalPatientsReportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.opencsv.CSVWriter;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -59,6 +52,7 @@ public class CommonReportsController {
 
 	@PostMapping(value = "/generate")
 	@ApiOperation(value = "API request to export common report")
+
 	public ResponseEntity getGeneratedReports(HttpServletResponse response,
 			@RequestBody CommonReportCriteria commonReportCriteria) throws Exception {
 
@@ -70,7 +64,6 @@ public class CommonReportsController {
 
 			String userId = validationService.verifyFirebaseIdToken(commonReportCriteria.getAuthToken());
 
-			CSVWriter writer;
 			List<String[]> data;
 			String body = "";
 			String fileName;
@@ -138,14 +131,21 @@ public class CommonReportsController {
 				.body(error);
 	}
 
-	public File writeCsvFile(List<String[]> data, String filename) throws IOException {
-		File csvFile = new File(filename);
-		CSVWriter writer = new CSVWriter(new FileWriter(csvFile, false));
-		for (String[] mapping : data) {
-			writer.writeNext(mapping);
+
+	public String prepareCsvData(List<String[]> data, String body) throws IOException {
+		if (CollectionUtils.isEmpty(data)) {
+			return null;
 		}
-		writer.close();
-		return csvFile;
+
+		for (int i = 0; i < data.size(); i++) {
+			String[] x = data.get(i);
+			for (int j = 0; j < x.length; j++) {
+				body = body + x[j];
+				body = body + ",";
+			}
+			body = body + "\n";
+		}
+		return body;
 	}
 
 	public String prepareCsvData(List<String[]> data, String body) throws IOException {
