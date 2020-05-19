@@ -33,7 +33,7 @@ public class FirebaseUserMgmt {
 		hasuraClaims.put("x-hasura-region", String.valueOf(facility.getRegion()));
 		hasuraClaims.put("x-hasura-env", env);
 		hasuraClaims.put("x-hasura-app", "cov2");
-		hasuraClaims.put("x-hasura-email", "cov2");
+		hasuraClaims.put("x-hasura-email", facility.getEmail());
 		hasuraClaims.put("x-hasura-name", facility.getName());
 		hasuraClaims.put("x-hasura-user-id",userRecord.getUid());
 		claims.put("https://hasura.io/jwt/claims", hasuraClaims);
