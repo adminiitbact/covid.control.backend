@@ -17,7 +17,6 @@ import javax.persistence.criteria.Root;
 
 import org.iitbact.cc.constants.ReportNames;
 import org.iitbact.cc.dto.PatientDischargedDto;
-import org.iitbact.cc.entities.AdminUser;
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.entities.Patient;
 import org.iitbact.cc.entities.PatientDischarged;
@@ -48,7 +47,7 @@ public class PatientDischargeReportService {
 		System.out.println("fetchDailyPatientDischargeList  start");
 		LOGGER.debug("fetchDailyPatientDischargeList start");
 
-		AdminUser user = userService.profile(uid);
+		userService.profile(uid);
 
 		List<String[]> entries = new ArrayList<>();
 		String testStatus;

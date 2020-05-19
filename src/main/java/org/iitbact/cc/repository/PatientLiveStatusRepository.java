@@ -1,15 +1,13 @@
 package org.iitbact.cc.repository;
 
-import org.iitbact.cc.dto.AvailabilityStatus;
+import java.util.List;
+
 import org.iitbact.cc.dto.PatientStatsDto;
-import org.iitbact.cc.entities.Patient;
 import org.iitbact.cc.entities.PatientLiveStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import java.util.List;
 
 public interface PatientLiveStatusRepository extends JpaRepository<PatientLiveStatus, Integer>, JpaSpecificationExecutor<PatientLiveStatus> {
 

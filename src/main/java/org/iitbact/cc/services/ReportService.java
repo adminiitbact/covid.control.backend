@@ -98,7 +98,7 @@ public class ReportService {
 
 	public List<String[]> fetchPatientData(String uid) throws CovidControlException {
 		AdminUser user = userService.profile(uid);
-		List<Patient> patients = patientRepository.findAll();
+		List<Patient> patients = patientRepository.findAll();//TODO get it by regionId
 
 		List<String[]> entries = new ArrayList<>();
 

@@ -6,7 +6,6 @@ import org.iitbact.cc.dto.PatientStatsAgeDto;
 import org.iitbact.cc.dto.PatientStatsDto;
 import org.iitbact.cc.dto.PatientStatsGenderDto;
 import org.iitbact.cc.helper.ControllerWrapper;
-import org.iitbact.cc.repository.PatientLiveStatusRepository;
 import org.iitbact.cc.requests.BaseRequest;
 import org.iitbact.cc.requests.PatientSearchCriteria;
 import org.iitbact.cc.response.ListResponse;
