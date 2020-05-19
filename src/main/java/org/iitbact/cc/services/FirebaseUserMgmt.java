@@ -1,6 +1,5 @@
 package org.iitbact.cc.services;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,15 +24,18 @@ public class FirebaseUserMgmt {
 	@Value("${ENV}")
 	private String env;
 	
-	private HashMap<String, Object> hasuraClaims(Facility facility){
+	private HashMap<String, Object> hasuraClaims(Facility facility,UserRecord userRecord){
 		HashMap<String, Object> claims = new HashMap<String, Object>();
 		Map<String, Object> hasuraClaims = new HashMap<String, Object>();
 		hasuraClaims.put("x-hasura-default-role", "user");
 		hasuraClaims.put("x-hasura-allowed-roles", new String[] { "user" });
-		hasuraClaims.put("x-hasura-facility-id",(int) facility.getFacilityId());
-		hasuraClaims.put("x-hasura-region", (int)facility.getRegion());
+		hasuraClaims.put("x-hasura-facility-id", String.valueOf(facility.getFacilityId()));
+		hasuraClaims.put("x-hasura-region", String.valueOf(facility.getRegion()));
 		hasuraClaims.put("x-hasura-env", env);
 		hasuraClaims.put("x-hasura-app", "cov2");
+		hasuraClaims.put("x-hasura-email", "cov2");
+		hasuraClaims.put("x-hasura-name", facility.getName());
+		hasuraClaims.put("x-hasura-user-id",userRecord.getUid());
 		claims.put("https://hasura.io/jwt/claims", hasuraClaims);
 		return claims;
 	}
@@ -58,14 +60,14 @@ public class FirebaseUserMgmt {
 				record = firebaseAuth.createUser(createRequest);
 				
 				//Set custom claims
-				firebaseAuth.setCustomUserClaims(record.getUid(), hasuraClaims(facility));
+				firebaseAuth.setCustomUserClaims(record.getUid(), hasuraClaims(facility,record));
 				
 				//Generate email reset link
 				return generateResetPasswordLink(facility.getEmail());
 			}else {
 				//Check if the facility Id matches with jwt facility id
 				Map<String, Object> claims= (Map<String, Object>) record.getCustomClaims().get("https://hasura.io/jwt/claims");
-				if(record!=null && (claims.get("x-hasura-facility-id")).equals(new BigDecimal(facility.getFacilityId()))) {
+				if(record!=null && (claims.get("x-hasura-facility-id")).equals(String.valueOf(facility.getFacilityId()))) {
 					//Generate email reset link
 					return generateResetPasswordLink(facility.getEmail());
 				}else {
@@ -144,7 +146,7 @@ public class FirebaseUserMgmt {
 		try {
 			UserRecord record=  fetchUser(facility.getEmail());
 			if(record!=null) {
-				record= FirebaseAuth.getInstance().updateUser((record.updateRequest().setCustomClaims(hasuraClaims(facility))));
+				record= FirebaseAuth.getInstance().updateUser((record.updateRequest().setCustomClaims(hasuraClaims(facility,record))));
 			}
 			return record;
 		} catch (FirebaseAuthException e) {
