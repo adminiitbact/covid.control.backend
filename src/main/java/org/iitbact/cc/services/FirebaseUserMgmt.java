@@ -1,7 +1,10 @@
 package org.iitbact.cc.services;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.mail.MessagingException;
 
 import org.iitbact.cc.entities.Facility;
 import org.iitbact.cc.exceptions.CovidControlErrorCode;
@@ -24,6 +27,11 @@ public class FirebaseUserMgmt {
 	@Value("${ENV}")
 	private String env;
 	
+	private final AmazonSESSample amazonSESSample;
+	
+	public FirebaseUserMgmt(AmazonSESSample amazonSESSample) {
+		this.amazonSESSample=amazonSESSample;
+	}
 	private HashMap<String, Object> hasuraClaims(Facility facility,UserRecord userRecord){
 		HashMap<String, Object> claims = new HashMap<String, Object>();
 		Map<String, Object> hasuraClaims = new HashMap<String, Object>();
@@ -40,12 +48,13 @@ public class FirebaseUserMgmt {
 		return claims;
 	}
 	
-	private String generateResetPasswordLink(String email) throws FirebaseAuthException {
-		return FirebaseAuth.getInstance().generateEmailVerificationLink(email);
+	private void generateResetPasswordLink(String email) throws FirebaseAuthException, MessagingException,UnsupportedEncodingException {
+		String resetLink=FirebaseAuth.getInstance().generateEmailVerificationLink(email);
+		amazonSESSample.sendResetEmail(email, resetLink);
 	}
 
 	@SuppressWarnings("unchecked")
-	public String createUpdateUser(Facility facility) throws CovidControlException {
+	public void createUpdateUser(Facility facility) throws CovidControlException {
 		// Create facility user at fire-base
 		try {
 			FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
@@ -63,19 +72,19 @@ public class FirebaseUserMgmt {
 				firebaseAuth.setCustomUserClaims(record.getUid(), hasuraClaims(facility,record));
 				
 				//Generate email reset link
-				return generateResetPasswordLink(facility.getEmail());
+				generateResetPasswordLink(facility.getEmail());
 			}else {
 				//Check if the facility Id matches with jwt facility id
 				Map<String, Object> claims= (Map<String, Object>) record.getCustomClaims().get("https://hasura.io/jwt/claims");
 				if(record!=null && (claims.get("x-hasura-facility-id")).equals(String.valueOf(facility.getFacilityId()))) {
 					//Generate email reset link
-					return generateResetPasswordLink(facility.getEmail());
+					generateResetPasswordLink(facility.getEmail());
 				}else {
 					log.error("EmailId conflict at firebase email {}, facility {}",facility.getEmail(),facility.getFacilityId());
 					throw new CovidControlException(CovidControlErrorCode.USER_ALREADY_EXIST, CovidControlErrorMsg.USER_ALREADY_EXIST); 
 				}
 			}
-		} catch (FirebaseAuthException e) {
+		} catch (FirebaseAuthException | MessagingException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 			log.error("Error in Firebase Action!");
 			throw new CovidControlException(CovidControlErrorCode.SYSTEM_ERROR,

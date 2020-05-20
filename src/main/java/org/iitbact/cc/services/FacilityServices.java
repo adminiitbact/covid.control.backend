@@ -54,9 +54,10 @@ public class FacilityServices {
 	private final WardRepository wardRepository;
 	private final ApiValidationService validationService;
 	private final FirebaseUserMgmt firebaseUserMgmt;
-
+	
 	public FacilityServices(FacilityRepository facilityRepository, FacilityLinkRepository facilityLinkRepository,
-			UserServices userServices, WardRepository wardRepository, ApiValidationService validationService,FirebaseUserMgmt firebaseUserMgmt) {
+			UserServices userServices, WardRepository wardRepository, ApiValidationService validationService,
+			FirebaseUserMgmt firebaseUserMgmt) {
 		this.facilityRepository = facilityRepository;
 		this.facilityLinkRepository = facilityLinkRepository;
 		this.userServices = userServices;
@@ -380,10 +381,10 @@ public class FacilityServices {
 		return null;
 	}
 
-	public String generateCredentails(String uid, int facilityId) throws CovidControlException {
+	public boolean generateCredentails(String uid, int facilityId) throws CovidControlException {
 		Facility facility = validationService.facilityValidation(uid, facilityId);
-		String pLink= firebaseUserMgmt.createUpdateUser(facility);
-		return pLink;
+		firebaseUserMgmt.createUpdateUser(facility);
+		return true;
 	}
 
 	public UserRecord facilityUserProfile(String uid, int facilityId) throws CovidControlException {

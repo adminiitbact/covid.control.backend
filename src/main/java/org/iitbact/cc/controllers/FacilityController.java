@@ -16,7 +16,6 @@ import org.iitbact.cc.response.FacilityProfile;
 import org.iitbact.cc.response.FacilityUserProfile;
 import org.iitbact.cc.response.ListResponse;
 import org.iitbact.cc.response.ListResponseType2;
-import org.iitbact.cc.response.StringResponse;
 import org.iitbact.cc.services.FacilityServices;
 import org.iitbact.cc.services.FacilityStatsServices;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -111,9 +110,9 @@ public class FacilityController {
 	}
 	
 	@PostMapping(path = "/facilities/{facilityId}/credentials/post")
-	@ApiOperation(response =StringResponse.class,value = "API to send login credentials if facility is operational")
-	public ResponseBean<StringResponse> generateCredentails(@ApiParam(required = true, example = "1") @PathVariable int facilityId,@RequestBody BaseRequest request){
-		return controllerWrapper.wrap(StringResponse::new, request, (uid) -> facilityServices.generateCredentails(uid,facilityId));
+	@ApiOperation(response =BooleanResponse.class,value = "API to send login credentials if facility is operational")
+	public ResponseBean<BooleanResponse> generateCredentails(@ApiParam(required = true, example = "1") @PathVariable int facilityId,@RequestBody BaseRequest request){
+		return controllerWrapper.wrap(BooleanResponse::new, request, (uid) -> facilityServices.generateCredentails(uid,facilityId));
 	}
 	
 	@PostMapping(path = "/facilities/{facilityId}/user/profile/get")
