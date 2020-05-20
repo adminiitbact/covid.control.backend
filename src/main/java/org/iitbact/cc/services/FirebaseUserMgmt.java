@@ -27,9 +27,9 @@ public class FirebaseUserMgmt {
 	@Value("${ENV}")
 	private String env;
 	
-	private final AmazonSESSample amazonSESSample;
+	private final AmazonSES amazonSESSample;
 	
-	public FirebaseUserMgmt(AmazonSESSample amazonSESSample) {
+	public FirebaseUserMgmt(AmazonSES amazonSESSample) {
 		this.amazonSESSample=amazonSESSample;
 	}
 	private HashMap<String, Object> hasuraClaims(Facility facility,UserRecord userRecord){
@@ -49,8 +49,8 @@ public class FirebaseUserMgmt {
 	}
 	
 	private void generateResetPasswordLink(String email) throws FirebaseAuthException, MessagingException,UnsupportedEncodingException {
-		String resetLink=FirebaseAuth.getInstance().generateEmailVerificationLink(email);
-		amazonSESSample.sendResetEmail(email, resetLink);
+		String resetLink=FirebaseAuth.getInstance().generatePasswordResetLink(email);
+		amazonSESSample.sendResetPasswordEmail(email, resetLink);
 	}
 
 	@SuppressWarnings("unchecked")

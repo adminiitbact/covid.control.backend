@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AmazonSESSample {
+public class AmazonSES {
 
     // Replace sender@example.com with your "From" address.
     // This address must be verified.
-    static final String FROM = "vinodtalapa002@gmail.com";
+    static final String FROM = "admin@cov2.in";
     static final String FROMNAME = "Admin";
 	
     // Replace recipient@example.com with a "To" address. If your account 
@@ -50,11 +50,11 @@ public class AmazonSESSample {
     static final String BODY = String.join(
     	    System.getProperty("line.separator"),
     	    "<h1>Link to reset password</h1>",
-    	    "<p>Please follow the link to reset your password for cov2.in. After that login to cov2.in using new credentials. ", 
-    	    "<a href='LINK'>Reset Password</a>"
+    	    "<p>Please follow the link to reset your password for cov2.in. After resetting,please login to cov2.in using new credentials. ", 
+    	    "<br><b><a href='LINK'>Reset Password</a></b>"
     	);
 
-    public void sendResetEmail(String email,String link) throws MessagingException, UnsupportedEncodingException {
+    public void sendResetPasswordEmail(String email,String link) throws MessagingException, UnsupportedEncodingException {
 
         // Create a Properties object to contain connection configuration information.
     	Properties props = System.getProperties();
