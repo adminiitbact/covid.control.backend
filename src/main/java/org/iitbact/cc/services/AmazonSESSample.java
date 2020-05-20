@@ -17,7 +17,7 @@ public class AmazonSESSample {
 
     // Replace sender@example.com with your "From" address.
     // This address must be verified.
-    static final String FROM = "admin@cov2.in";
+    static final String FROM = "vinodtalapa002@gmail.com";
     static final String FROMNAME = "Admin";
 	
     // Replace recipient@example.com with a "To" address. If your account 
@@ -43,7 +43,7 @@ public class AmazonSESSample {
     static final String HOST = "email-smtp.ap-south-1.amazonaws.com";
     
     // The port you will connect to on the Amazon SES SMTP endpoint. 
-    static final int PORT = 25;
+    static final int PORT = 587;
     
     static final String SUBJECT = "Reset Password for cov2.in";
     
