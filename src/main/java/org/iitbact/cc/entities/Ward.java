@@ -70,4 +70,10 @@ public class Ward implements Serializable {
 
     @Column(name = "active")
     private Integer active;
+    
+    @Column(name = "creation_time")
+    private Integer creationtime;    
+    
+    
+    
 }
